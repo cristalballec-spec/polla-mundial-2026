@@ -160,7 +160,7 @@ main{padding:20px 0 60px}
 .m-meta .venue{opacity:.85}
 .m-badge{font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:3px 9px;border-radius:20px;white-space:nowrap}
 .b-pend{background:#EEF1F4;color:var(--pend)}
-.b-fin{background:#E6F4F1;color:#007481}
+.b-fin{background:#E6F4F1;color:#007481;font-weight:800}
 .b-hit{background:var(--hit-bg);color:var(--hit)}
 .b-partial{background:var(--partial-bg);color:var(--partial)}
 .b-miss{background:var(--miss-bg);color:var(--miss)}
@@ -921,7 +921,7 @@ function gotoMatch(id){
 function grpCard(m,idx){idx=idx||0;
   const ev=evalMatch(m);const r=store.results[m.id]||{h:"",a:""};const p=store.preds[m.id]||{h:"",a:""};
   const started=matchStarted(m);const live=matchLive(m);const hasPred=(p.h!==""||p.a!=="");const hasResult=hasScore(r);
-  const badge=live?`<span class="m-badge b-live"><span class="lv-dot"></span>En vivo</span>`:hasResult?`<span class="m-badge b-fin">Finalizado</span>`:`<span class="m-badge b-pend">Pendiente</span>`;
+  const badge=live?`<span class="m-badge b-live"><span class="lv-dot"></span>En vivo</span>`:hasResult?`<span class="m-badge b-fin">Finalizado</span>`:`<span class="m-badge b-pend">Por jugar</span>`;
   const cheer=live?`<span class="cheer live"><span class="lv-dot"></span>Partido en juego · pronóstico cerrado</span>`:(ev.status==="exact"?`<span class="cheer exact">🎉 ¡Felicitaciones! Clavaste el marcador</span>`:ev.status==="partial"?`<span class="cheer partial">👏 Bien, acertaste el resultado</span>`:ev.status==="miss"?`<span class="cheer miss">😬 Esta vez no… sigue</span>`:(started?`<span class="cheer locked">🔒 ${hasPred?'Pronóstico cerrado':'Se cerró sin tu pronóstico'}</span>`:`<span style="color:var(--ink-soft);font-weight:600">Pon tu pronóstico ⤴</span>`));
   const pts=(!live&&ev.status!=="pending")?`<span class="pts">+<b>${ev.pts}</b> pts</span>`:"";
   const ec=isEcuG(m);const rival=m.home==="ECU"?m.away:m.home;
@@ -988,7 +988,7 @@ function refreshCard(id){
   const badge=card.querySelector(".m-badge"),foot=card.querySelector(".m-foot");
   const hasResult=hasScore(store.results[m.id]);
   // badge: solo 3 estados
-  if(badge){if(hasResult){badge.className="m-badge b-fin";badge.textContent="Finalizado";}else{badge.className="m-badge b-pend";badge.textContent="Pendiente";}}
+  if(badge){if(hasResult){badge.className="m-badge b-fin";badge.textContent="Finalizado";}else{badge.className="m-badge b-pend";badge.textContent="Por jugar";}}
   // footer: detalle del resultado
   const cheerMap={exact:`<span class="cheer exact">🎉 ¡Clavaste el marcador!</span>`,partial:`<span class="cheer partial">👏 Acertaste el resultado</span>`,miss:`<span class="cheer miss">😬 Esta vez no… sigue</span>`,pending:hasResult?`<span class="cheer locked">🔒 Sin pronóstico`:`<span style="color:var(--ink-soft);font-weight:600">Pon tu pronóstico ⤴</span>`};
   const pts=ev.pts>0?`<span class="pts">+<b>${ev.pts}</b> pts</span>`:"";
