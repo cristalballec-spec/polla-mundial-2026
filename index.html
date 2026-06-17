@@ -434,6 +434,16 @@ footer{border-top:1px solid var(--line);padding:22px 0;text-align:center;color:v
 .rank-chips{display:flex;gap:7px;margin:0 2px 14px;overflow-x:auto;-webkit-overflow-scrolling:touch}
 .rchip{flex:0 0 auto;background:var(--card);border:1.5px solid var(--line);color:var(--ink-soft);border-radius:999px;padding:7px 15px;font-weight:800;font-size:13px}
 .rchip.on{background:linear-gradient(135deg,#0092a3,#006675);border-color:transparent;color:#fff;box-shadow:0 3px 10px rgba(0,116,129,.28)}
+.rchip-event{border-color:var(--gold);color:#7a5b00}
+.rchip-event.on{background:linear-gradient(135deg,#E0B43A,#B8901E);border-color:transparent;color:#fff;box-shadow:0 3px 12px rgba(184,144,30,.4)}
+/* Banner del evento */
+.event-banner{background:linear-gradient(135deg,#1A1815,#2a2620);color:#fff;border-radius:14px;padding:16px 18px;margin:0 2px 14px;border:1.5px solid var(--gold);position:relative;overflow:hidden}
+.event-banner::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 100% 0%,rgba(184,144,30,.25),transparent 60%);pointer-events:none}
+.event-banner .eb-top{font-size:12px;font-weight:800;letter-spacing:.05em;color:var(--gold);margin-bottom:8px}
+.event-banner .eb-match{font-size:16px;font-weight:800;display:flex;align-items:center;gap:8px;flex-wrap:wrap;line-height:1.3}
+.event-banner .eb-sc{background:rgba(255,255,255,.14);border-radius:8px;padding:3px 12px;font-family:'Anton',sans-serif;font-size:18px;letter-spacing:.02em}
+.event-banner.live .eb-sc{background:#007481;animation:livePulseBadge 1.6s ease-in-out infinite}
+.event-banner .eb-sub{font-size:11.5px;color:#C9C2B5;margin-top:8px;font-weight:600}
 .rank-row.crowned{border-color:var(--gold);background:linear-gradient(90deg,rgba(64,224,208,.12),var(--card));box-shadow:0 0 0 1px var(--gold)}
 /* CINEMATIC CELEBRACIONES */
 .cine{position:fixed;inset:0;z-index:300;pointer-events:none;overflow:hidden}
@@ -1333,6 +1343,16 @@ function updateFab(){const onList=document.querySelector(".tab.active").dataset.
 /* ===== MULTIJUGADOR (Netlify Functions + Blobs) ===== */
 const API="/.netlify/functions";
 const DEFAULT_LEAGUE="STATUS";
+/* ===== EVENTO ESPECIAL (premio en evento de empresa) ===== */
+const EVENT_CFG={
+  active:true,
+  matchId:"G3",              // MEX vs KOR (jueves 18, 20:00 EC)
+  league:"EVENTO-F1",        // liga del evento
+  title:"🏆 EVENTO F1 · Premio en vivo",
+  subtitle:"Quien acierte MÉXICO vs COREA DEL SUR gana el premio",
+  date:"2026-06-18"
+};
+function eventMatch(){return MATCHES.find(x=>x.id===EVENT_CFG.matchId);}
 const LS_PLAYER="pollaMundial2026_player";
 function genId(){return "p"+Date.now().toString(36)+Math.random().toString(36).slice(2,8);}
 function loadPlayer(){try{const p=JSON.parse(localStorage.getItem(LS_PLAYER)||"null");if(p&&p.id)return{id:p.id,name:p.name||"",league:(p.league||DEFAULT_LEAGUE)};}catch(e){}return{id:genId(),name:"",league:DEFAULT_LEAGUE};}
@@ -1524,26 +1544,62 @@ function jornadaBoard(j){
   }).filter(x=>x.predCount>0||x.playerId===player.id)
     .sort((a,b)=>b.pts-a.pts||b.exact-a.exact||(a.name||"").localeCompare(b.name||""));
 }
+function matchBoard(matchId){
+  const d=lastRankData;if(!d)return [];
+  const results=d.results||{};const entries=(d.entries||[]).slice();
+  if(joined()&&!entries.some(e=>e.playerId===player.id)){
+    const fp={};Object.keys(store.preds||{}).forEach(mid=>{if(results[mid])fp[mid]=store.preds[mid];});
+    entries.push({playerId:player.id,name:player.name,preds:fp});
+  }
+  return entries.map(e=>{
+    const p=(e.preds||{})[matchId];const r=results[matchId];
+    let pts=0,exact=0,hasP=hasScore(p);
+    if(hasScore(r)&&hasP){
+      if(+r.h===+p.h&&+r.a===+p.a){pts=5;exact=1;}
+      else if(_out(+r.h,+r.a)===_out(+p.h,+p.a))pts=3;
+    }
+    return{playerId:e.playerId,name:e.name,pts,exact,predCount:hasP?1:0,pred:hasP?(p.h+":"+p.a):null};
+  }).filter(x=>x.predCount>0||x.playerId===player.id)
+    .sort((a,b)=>b.pts-a.pts||b.exact-a.exact||(a.name||"").localeCompare(b.name||""));
+}
 function wireChips(){const body=$("#rankBody");if(!body)return;body.querySelectorAll(".rchip").forEach(c=>c.onclick=()=>{rankView=c.dataset.rv;renderRankView();});}
 function renderRankView(){
   const body=$("#rankBody");if(!body||!lastRankData)return;
   const d=lastRankData;const results=d.results||store.results||{};
-  const chips=`<div class="rank-chips">`+["general","1","2","3"].map(k=>`<button class="rchip ${rankView===k?'on':''}" data-rv="${k}">${k==="general"?"General":"J"+k}</button>`).join("")+`</div>`;
-  let board,crown=false,foot;
+  const showEvent=EVENT_CFG.active;
+  const baseChips=["general","1","2","3"].map(k=>`<button class="rchip ${rankView===k?'on':''}" data-rv="${k}">${k==="general"?"General":"J"+k}</button>`).join("");
+  const eventChip=showEvent?`<button class="rchip rchip-event ${rankView==="event"?'on':''}" data-rv="event">🏆 Evento</button>`:"";
+  const chips=`<div class="rank-chips">`+baseChips+eventChip+`</div>`;
+  let board,crown=false,foot,eventBanner="";
   if(rankView==="general"){
     board=(d.leaderboard||[]).slice();
     if(joined()&&!board.some(p=>p.playerId===player.id)){board.push(myLocalRow(results));board.sort((a,b)=>b.pts-a.pts||b.exact-a.exact||(a.name||"").localeCompare(b.name||""));}
     foot=`<span class="live-dot" style="background:#1bbf86"></span> Se actualiza sola al entrar y mientras la miras. Toca <b>Actualizar</b> para traer marcadores.`;
+  }else if(rankView==="event"){
+    crown=true;board=matchBoard(EVENT_CFG.matchId);
+    const em=eventMatch();const r=results[EVENT_CFG.matchId];
+    const live=em&&matchLive(em);const fin=hasScore(r);
+    const scoreTxt=fin?`${r.h} - ${r.a}`:(live?"EN JUEGO":"Por jugar");
+    eventBanner=`<div class="event-banner ${live?'live':''}">
+      <div class="eb-top">${EVENT_CFG.title}</div>
+      <div class="eb-match">${FLAG[em.home]} ${NAME[em.home]} <span class="eb-sc">${scoreTxt}</span> ${NAME[em.away]} ${FLAG[em.away]}</div>
+      <div class="eb-sub">${EVENT_CFG.subtitle} · 5pt exacto / 3pt resultado</div>
+    </div>`;
+    foot=`🏆 Solo cuenta el partido del evento. ${fin?"Resultado final cargado.":"Se decide al terminar el partido."}`;
   }else{
     crown=true;board=jornadaBoard(+rankView);
     foot=`👑 Corona al mejor de la jornada ${rankView}. Solo cuentan los partidos de esa fecha.`;
   }
-  if(!board.length){body.innerHTML=chips+`<div class="empty"><div class="big">⏳</div>Aún no hay puntos en esta jornada.<br><small>Aparecen cuando se carguen los marcadores.</small></div>`;wireChips();return;}
+  if(!board.length){
+    let eb="";
+    if(rankView==="event"){const em=eventMatch();const r=results[EVENT_CFG.matchId];const live=em&&matchLive(em);const fin=hasScore(r);const scoreTxt=fin?`${r.h} - ${r.a}`:(live?"EN JUEGO":"Por jugar");eb=`<div class="event-banner ${live?'live':''}"><div class="eb-top">${EVENT_CFG.title}</div><div class="eb-match">${FLAG[em.home]} ${NAME[em.home]} <span class="eb-sc">${scoreTxt}</span> ${NAME[em.away]} ${FLAG[em.away]}</div><div class="eb-sub">${EVENT_CFG.subtitle} · 5pt exacto / 3pt resultado</div></div>`;}
+    body.innerHTML=chips+eb+`<div class="empty"><div class="big">⏳</div>${rankView==="event"?"Aún nadie pronosticó este partido.<br><small>Pon tu marcador en la Lista.</small>":"Aún no hay puntos en esta jornada.<br><small>Aparecen cuando se carguen los marcadores.</small>"}</div>`;wireChips();return;
+  }
   const myIdx=board.findIndex(p=>p.playerId===player.id);
   let youPos="";
   if(myIdx>=0){const pos=rankPositions(board);const r=pos[myIdx];const tied=board.filter(p=>p.pts===board[myIdx].pts).length>1;youPos=`<div class="you-pos">📍 Tu posición: <b>${r}º</b> de ${board.length} · ${board[myIdx].pts} pts${tied?' · empate':''}</div>`;}
   const prev={};body.querySelectorAll(".rank-row[data-pid]").forEach(r=>{prev[r.dataset.pid]=r.getBoundingClientRect().top;});
-  body.innerHTML=chips+youPos+`<div class="rank-table">`+rankRowsHTML(board,crown)+`</div><div class="rank-foot">${foot}</div>`;
+  body.innerHTML=chips+(eventBanner||"")+youPos+`<div class="rank-table">`+rankRowsHTML(board,crown)+`</div><div class="rank-foot">${foot}</div>`;
   body.querySelectorAll(".rank-row[data-pid]").forEach(r=>{
     const o=prev[r.dataset.pid];
     if(o==null){r.style.opacity="0";requestAnimationFrame(()=>{r.style.transition="opacity .5s ease";r.style.opacity="1";});return;}
