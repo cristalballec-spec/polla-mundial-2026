@@ -1538,6 +1538,26 @@ function renderRankView(){
 
 /* ===== MODO EN VIVO ===== */
 let lastLiveSync=0,liveSig="",prevLiveIds=[];
+// Minutos desde el kickoff en los que se fuerza sync: 25min, MT(45), 70min, final(95)
+const LIVE_SYNC_MINUTES=[25,45,70,95];
+const firedSyncs={};
+function checkScheduledSyncs(){
+  const now=Date.now();
+  const lv=liveMatches();
+  let needSync=false;
+  lv.forEach(m=>{
+    const ko=kickoffTs(m);if(ko==null)return;
+    const elapsed=Math.floor((now-ko)/60000);
+    if(!firedSyncs[m.id])firedSyncs[m.id]=new Set();
+    LIVE_SYNC_MINUTES.forEach(target=>{
+      if(elapsed>=target&&elapsed<=target+2&&!firedSyncs[m.id].has(target)){
+        firedSyncs[m.id].add(target);needSync=true;
+      }
+    });
+  });
+  Object.keys(firedSyncs).forEach(id=>{if(!lv.find(m=>m.id===id))delete firedSyncs[id];});
+  return needSync;
+}
 function updateLiveBar(){
   const bar=$("#liveBar");if(!bar)return;
   const lv=liveMatches();
@@ -1553,12 +1573,14 @@ function liveHeartbeat(){
   try{updateLiveBar();}catch(e){}
   const lv=liveMatches();
   const curIds=lv.map(m=>m.id);
-  const ended=prevLiveIds.some(id=>!curIds.includes(id)); // un partido salió de la ventana = terminó
+  const ended=prevLiveIds.some(id=>!curIds.includes(id));
   prevLiveIds=curIds;
   const sig=MATCHES.filter(matchStarted).length+"|"+lv.length;
   const changed=(sig!==liveSig);liveSig=sig;
-  const dueHourly=(lv.length&&Date.now()-lastLiveSync>=480000); // con partidos en vivo, revisar cada 8 min
-  if(ended||dueHourly){
+  // Sync automático en los minutos clave: 25, 45(MT), 70, 95(final)
+  const scheduledSync=lv.length>0?checkScheduledSyncs():false;
+  const dueHourly=(lv.length&&Date.now()-lastLiveSync>=480000);
+  if(ended||scheduledSync||dueHourly){
     lastLiveSync=Date.now();
     try{Promise.resolve(syncResults(true)).then(()=>{try{updateLiveBar();}catch(e){}if(activeView()==="lista"&&!typingScore())renderList();if(activeView()==="ranking"&&joined())loadRankBody(true);}).catch(()=>{});}catch(e){}
   }
