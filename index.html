@@ -757,7 +757,7 @@ const TEAM_LIST=ALL_CODES.slice().sort((a,b)=>NAME[a].localeCompare(NAME[b]));
 
 /* ===== ESTADO ===== */
 const LS_KEY="pollaMundial2026_v3";
-let store={preds:{},results:{},bracket:{}};
+let store={preds:{},results:{},bracket:{},finished:{}};
 function load(){
   try{
     const s=JSON.parse(localStorage.getItem(LS_KEY)||"null");
@@ -924,6 +924,8 @@ function matchStarted(m){
 }
 function matchLive(m){
   if(m&&m.real)return false;
+  // Si ESPN confirmó Full Time, terminó
+  if(m&&m.id&&store.finished&&store.finished[m.id])return false;
   const k=kickoffTs(m);if(k==null)return false;
   const now=Date.now();
   return now>=k && now<k+135*60000; // ventana en juego ~135 min
@@ -1318,6 +1320,8 @@ async function syncResults(silent){
       if(hs==null||as==null||hs===""||as==="")return;
       // Siempre guardar si está en vivo o terminado
       store.results[target.id]={h:String(hs),a:String(as)};
+      // Marcar como terminado cuando ESPN confirma Full Time
+      if(finished){if(!store.finished)store.finished={};store.finished[target.id]=true;}
       updated++;
     });
     store.lastSync=new Date().toISOString();save();schedulePush();
