@@ -520,7 +520,8 @@ select.join-inp{cursor:pointer;appearance:none;-webkit-appearance:none;backgroun
 .ob-h{margin:8px 0 4px;text-align:center;font-size:21px;color:var(--ink);font-weight:900}
 .ob-sub{margin:0 0 4px;text-align:center;font-size:13px;color:var(--ink-soft);line-height:1.45}
 .ob-l{display:block;font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);margin:14px 2px 6px}
-.ob-inp{width:100%;box-sizing:border-box;padding:13px 14px;border:1.5px solid var(--line);border-radius:12px;font-size:15px;font-weight:600;color:var(--ink);background:#fff;outline:none}
+.ob-inp{width:100%;box-sizing:border-box;padding:13px 14px;border:1.5px solid var(--line);border-radius:12px;font-size:15px;font-weight:600;color:var(--ink);background:#fff;outline:none;margin-bottom:10px}
+select.ob-inp{cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%235C6B73'%20stroke-width='2.5'%3E%3Cpath%20d='M6%209l6%206%206-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:18px;padding-right:40px}
 .ob-inp:focus{border-color:var(--field);box-shadow:0 0 0 3px rgba(0,116,129,.13)}
 .ob-seg{display:flex;gap:8px}
 .ob-segbtn{flex:1;padding:11px 8px;border:1.5px solid var(--line);background:#fff;border-radius:12px;font-weight:800;font-size:13px;color:var(--ink-soft);cursor:pointer;transition:.18s}
@@ -577,8 +578,13 @@ select.join-inp{cursor:pointer;appearance:none;-webkit-appearance:none;backgroun
     <label class="ob-l">Tu nombre</label>
     <input id="obName" class="ob-inp" type="text" maxlength="40" placeholder="Ej. Edu P." autocomplete="off">
     <label class="ob-l">Liga</label>
-    <input id="obLeague" class="ob-inp" type="text" maxlength="24" value="STATUS" autocomplete="off">
-    <p class="ob-hint">Por defecto compites en <b>STATUS</b>. Cambia el código solo si tu familia o tu empresa tiene su propia liga (ej. <b>FAMILIA</b>, <b>SUPERBIO</b>). Mismo código = misma tabla.</p>
+    <select id="obLeagueSel" class="ob-inp">
+      <option value="STATUS" selected>STATUS · General</option>
+      <option value="EVENTO-F1">🏆 EVENTO F1 · Partners</option>
+      <option value="__new__">➕ Otra liga (nueva)…</option>
+    </select>
+    <input id="obLeague" class="ob-inp" type="text" maxlength="24" placeholder="Código de tu liga nueva" autocomplete="off" style="display:none">
+    <p class="ob-hint">Elige <b>STATUS</b> para la tabla general o <b>EVENTO F1</b> para el premio del evento. Mismo código = misma tabla.</p>
     <button id="obJoin" class="ob-btn">Entrar a competir</button>
     <button id="obSkip" class="ob-skip">Explorar primero</button>
   </div>
@@ -1404,12 +1410,20 @@ function showOnboardIfNeeded(){
   const ov=$("#onboard");if(!ov)return;
   ov.hidden=false;
   const dismiss=()=>{try{localStorage.setItem(LS_ONBOARD,"1");}catch(e){}ov.hidden=true;};
+  // Selector de liga: mostrar campo de texto solo si elige "otra"
+  const sel=$("#obLeagueSel"),inp=$("#obLeague");
+  if(sel)sel.onchange=()=>{
+    if(sel.value==="__new__"){inp.style.display="";inp.value="";inp.focus();}
+    else{inp.style.display="none";inp.value="";}
+  };
   const join=$("#obJoin");
   if(join)join.onclick=()=>{
     const ni=$("#obName"),n=ni?ni.value.trim():"";
     if(!n){if(ni)ni.focus();toast("Escribe tu nombre");return;}
-    const li=$("#obLeague");
-    const lg=((li?li.value.trim():"")||DEFAULT_LEAGUE).toUpperCase().replace(/[^A-Z0-9-]/g,"")||DEFAULT_LEAGUE;
+    let lg;
+    if(sel&&sel.value==="__new__"){lg=(inp?inp.value.trim():"")||DEFAULT_LEAGUE;}
+    else{lg=sel?sel.value:DEFAULT_LEAGUE;}
+    lg=lg.toUpperCase().replace(/[^A-Z0-9-]/g,"")||DEFAULT_LEAGUE;
     player.name=n;player.league=lg;savePlayer();
     dismiss();updateJoinNudge();
     showSaveStatus("saving");pendingUserSave=true;pushState();
