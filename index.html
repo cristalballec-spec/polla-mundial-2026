@@ -386,6 +386,7 @@ footer{border-top:1px solid var(--line);padding:22px 0;text-align:center;color:v
 .join-sub{color:var(--ink-soft);font-size:13.5px;margin:6px 0 18px;line-height:1.5}
 .jl{display:block;text-align:left;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft);margin:0 2px 5px}
 .join-inp{width:100%;border:1.5px solid var(--line);border-radius:11px;padding:12px 14px;font-size:16px;font-weight:600;color:var(--ink);margin-bottom:14px;background:var(--paper)}
+select.join-inp{cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%235C6B73'%20stroke-width='2.5'%3E%3Cpath%20d='M6%209l6%206%206-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:18px;padding-right:40px}
 .join-inp:focus{outline:none;border-color:var(--field)}
 .join-hint{font-size:11.5px;color:var(--ink-soft);text-align:left;margin:-4px 2px 16px;line-height:1.45}
 .join-btn{width:100%;background:linear-gradient(135deg,#0092a3,#006675);color:#fff;border:none;border-radius:12px;padding:14px;font-weight:800;font-size:15px;box-shadow:0 4px 14px rgba(0,116,129,.3)}
@@ -1475,20 +1476,37 @@ function shareLeague(){
 function renderRanking(){
   const w=$("#rankWrap");if(!w)return;
   if(!joined()){
+    const LEAGUES=[
+      {code:"STATUS",label:"STATUS · General"},
+      {code:"EVENTO-F1",label:"🏆 EVENTO F1 · Partners"}
+    ];
+    const curLg=(player.league||DEFAULT_LEAGUE).toUpperCase();
+    const isKnown=LEAGUES.some(l=>l.code===curLg);
+    const opts=LEAGUES.map(l=>`<option value="${l.code}" ${curLg===l.code?"selected":""}>${l.label}</option>`).join("")
+      +`<option value="__new__" ${!isKnown?"selected":""}>➕ Otra liga (nueva)…</option>`;
     w.innerHTML=`<div class="join-card">
       <div class="join-ic">🏅</div>
       <h3>Compite con tu grupo</h3>
-      <p class="join-sub">Pon tu nombre y entra a la liga. Verás la tabla de posiciones en vivo con todos los que jueguen.</p>
+      <p class="join-sub">Pon tu nombre y elige tu liga. Verás la tabla de posiciones en vivo con todos los que jueguen.</p>
       <label class="jl">Tu nombre</label>
       <input id="joinName" type="text" maxlength="40" placeholder="Ej. Edu P." class="join-inp" autocomplete="off">
-      <label class="jl">Código de liga</label>
-      <input id="joinLeague" type="text" maxlength="24" value="${escH(player.league||DEFAULT_LEAGUE)}" class="join-inp" autocomplete="off">
-      <p class="join-hint">Todos los que usen el mismo código compiten en la misma tabla. Comparte el código (o el enlace) con tu grupo.</p>
+      <label class="jl">Liga</label>
+      <select id="joinLeagueSel" class="join-inp">${opts}</select>
+      <input id="joinLeague" type="text" maxlength="24" value="${isKnown?"":escH(curLg)}" placeholder="Código de tu liga nueva" class="join-inp" autocomplete="off" style="${isKnown?"display:none":""}">
+      <p class="join-hint">Todos los que usen la misma liga compiten en la misma tabla. Comparte el código (o el enlace) con tu grupo.</p>
       <button class="join-btn" id="joinBtn">Entrar a competir</button>
     </div>`;
+    const sel=$("#joinLeagueSel"),inp=$("#joinLeague");
+    if(sel)sel.onchange=()=>{
+      if(sel.value==="__new__"){inp.style.display="";inp.value="";inp.focus();}
+      else{inp.style.display="none";inp.value="";}
+    };
     const jb=$("#joinBtn");if(jb)jb.onclick=()=>{
       const n=$("#joinName").value.trim();
-      const lg=($("#joinLeague").value.trim()||DEFAULT_LEAGUE).toUpperCase().replace(/[^A-Z0-9-]/g,"")||DEFAULT_LEAGUE;
+      let lg;
+      if(sel&&sel.value==="__new__"){lg=(inp.value.trim()||DEFAULT_LEAGUE);}
+      else{lg=sel?sel.value:DEFAULT_LEAGUE;}
+      lg=lg.toUpperCase().replace(/[^A-Z0-9-]/g,"")||DEFAULT_LEAGUE;
       if(!n){toast("Escribe tu nombre");return;}
       player.name=n;player.league=lg;savePlayer();
       updateJoinNudge();showSaveStatus("saving");pendingUserSave=true;
