@@ -445,6 +445,26 @@ footer{border-top:1px solid var(--line);padding:22px 0;text-align:center;color:v
 .event-banner.live .eb-sc{background:#007481;animation:livePulseBadge 1.6s ease-in-out infinite}
 .event-banner .eb-sub{font-size:11.5px;color:#C9C2B5;margin-top:8px;font-weight:600}
 .event-banner .eb-winners{margin-top:12px;background:linear-gradient(135deg,#E0B43A,#B8901E);color:#1A1815;font-weight:800;font-size:13.5px;border-radius:10px;padding:9px 14px;text-align:center;box-shadow:0 3px 12px rgba(184,144,30,.35)}
+/* Mis partidos por fecha */
+.mm-summary{display:flex;flex-wrap:wrap;gap:10px;background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;margin:0 2px 14px;font-size:13px;font-weight:700;color:var(--ink)}
+.mm-summary b{color:var(--field)}
+.mm-date{font-family:'Anton',sans-serif;font-size:13px;background:var(--scoreboard);color:#fff;border-radius:7px;padding:4px 11px;display:inline-block;margin:16px 2px 9px;text-transform:capitalize}
+.mm-list{display:flex;flex-direction:column;gap:8px}
+.mm-row{background:var(--card);border:1.5px solid var(--line);border-radius:11px;padding:11px 13px;display:flex;flex-direction:column;gap:7px}
+.mm-row.exact{border-color:#1bbf86;background:linear-gradient(90deg,rgba(27,191,134,.08),var(--card))}
+.mm-row.partial{border-color:var(--gold);background:linear-gradient(90deg,rgba(184,144,30,.08),var(--card))}
+.mm-row.miss{opacity:.75}
+.mm-teams{font-weight:800;font-size:14.5px}
+.mm-teams b{color:var(--ink-soft);font-weight:600;font-size:12px;margin:0 4px}
+.mm-scores{display:flex;gap:14px;font-size:13px;color:var(--ink-soft);font-weight:600}
+.mm-scores b{color:var(--ink)}
+.mm-badge{align-self:flex-start;font-size:11.5px;font-weight:800;border-radius:20px;padding:3px 11px}
+.mm-badge.exact{background:#E6F8F1;color:#0a8f63}
+.mm-badge.partial{background:#FBF3DE;color:#7a5b00}
+.mm-badge.miss{background:#FBE7E5;color:#b53024}
+.mm-badge.pend{background:#EEF1F4;color:var(--pend)}
+.mm-badge.live{background:#007481;color:#fff;display:inline-flex;align-items:center;gap:5px}
+.mm-badge.live .lv-dot{width:7px;height:7px;background:#fff}
 .rank-row.crowned{border-color:var(--gold);background:linear-gradient(90deg,rgba(64,224,208,.12),var(--card));box-shadow:0 0 0 1px var(--gold)}
 /* CINEMATIC CELEBRACIONES */
 .cine{position:fixed;inset:0;z-index:300;pointer-events:none;overflow:hidden}
@@ -1568,11 +1588,59 @@ function matchBoard(matchId){
     .sort((a,b)=>b.pts-a.pts||b.exact-a.exact||(a.name||"").localeCompare(b.name||""));
 }
 function wireChips(){const body=$("#rankBody");if(!body)return;body.querySelectorAll(".rchip").forEach(c=>c.onclick=()=>{rankView=c.dataset.rv;renderRankView();});}
+function renderMyMatchesByDate(results){
+  results=results||store.results||{};
+  const preds=store.preds||{};
+  // Solo partidos donde tengo pronóstico
+  const mine=MATCHES.filter(m=>hasScore(preds[m.id])).slice()
+    .sort((a,b)=>(a.date||"").localeCompare(b.date||"")||(a.time||"").localeCompare(b.time||""));
+  if(!mine.length){
+    return `<div class="empty"><div class="big">📅</div>Aún no has hecho pronósticos.<br><small>Ve a la Lista y pon tus marcadores.</small></div>`;
+  }
+  let totalPts=0,exact=0,partial=0;
+  let html="",curDate=null;
+  mine.forEach(m=>{
+    if(m.date!==curDate){
+      curDate=m.date;
+      html+=`<div class="mm-date">${fmtLong(m.date)}</div>`;
+    }
+    const r=results[m.id]||{},p=preds[m.id]||{};
+    const hasR=hasScore(r);
+    let status="pending",pts=0;
+    if(hasR){
+      if(+r.h===+p.h&&+r.a===+p.a){status="exact";pts=5;exact++;}
+      else if(outcome(+r.h,+r.a)===outcome(+p.h,+p.a)){status="partial";pts=3;partial++;}
+      else status="miss";
+      totalPts+=pts;
+    }
+    const live=matchLive(m);
+    const badge=live?`<span class="mm-badge live"><span class="lv-dot"></span>En vivo</span>`
+      :hasR?`<span class="mm-badge ${status}">${status==="exact"?"🎉 +5":status==="partial"?"👏 +3":"😬 0"}</span>`
+      :`<span class="mm-badge pend">Por jugar</span>`;
+    html+=`<div class="mm-row ${status}">
+      <div class="mm-teams">${FLAG[m.home]||""} ${m.home} <b>vs</b> ${m.away} ${FLAG[m.away]||""}</div>
+      <div class="mm-scores">
+        <span class="mm-pred">Tú: <b>${p.h}-${p.a}</b></span>
+        <span class="mm-real">${hasR?`Real: <b>${r.h}-${r.a}</b>`:`<i>sin resultado</i>`}</span>
+      </div>
+      ${badge}
+    </div>`;
+  });
+  const header=`<div class="mm-summary">
+    <span><b>${totalPts}</b> pts</span>
+    <span>🎯 ${exact} exactos</span>
+    <span>👏 ${partial} resultados</span>
+    <span>📋 ${mine.length} pronósticos</span>
+  </div>`;
+  return header+`<div class="mm-list">`+html+`</div>`;
+}
 function renderRankView(){
   const body=$("#rankBody");if(!body||!lastRankData)return;
-  const d=lastRankData;const results=d.results||store.results||{};
+  const d=lastRankData;
+  // Combinar resultados del servidor con los locales frescos (ESPN) — local tiene prioridad
+  const results=Object.assign({},d.results||{},store.results||{});
   const showEvent=EVENT_CFG.active;
-  const baseChips=["general","1","2","3"].map(k=>`<button class="rchip ${rankView===k?'on':''}" data-rv="${k}">${k==="general"?"General":"J"+k}</button>`).join("");
+  const baseChips=["general","mine","1","2","3"].map(k=>`<button class="rchip ${rankView===k?'on':''}" data-rv="${k}">${k==="general"?"General":k==="mine"?"📅 Mis partidos":"J"+k}</button>`).join("");
   const eventChip=showEvent?`<button class="rchip rchip-event ${rankView==="event"?'on':''}" data-rv="event">🏆 Evento</button>`:"";
   const chips=`<div class="rank-chips">`+baseChips+eventChip+`</div>`;
   let board,crown=false,foot,eventBanner="";
@@ -1580,6 +1648,10 @@ function renderRankView(){
     board=(d.leaderboard||[]).slice();
     if(joined()&&!board.some(p=>p.playerId===player.id)){board.push(myLocalRow(results));board.sort((a,b)=>b.pts-a.pts||b.exact-a.exact||(a.name||"").localeCompare(b.name||""));}
     foot=`<span class="live-dot" style="background:#1bbf86"></span> Se actualiza sola al entrar y mientras la miras. Toca <b>Actualizar</b> para traer marcadores.`;
+  }else if(rankView==="mine"){
+    // Vista especial: mis partidos agrupados por fecha (no usa la tabla de ranking)
+    body.innerHTML=chips+renderMyMatchesByDate(results);
+    wireChips();return;
   }else if(rankView==="event"){
     crown=true;board=matchBoard(EVENT_CFG.matchId);
     const em=eventMatch();const r=results[EVENT_CFG.matchId];
