@@ -1407,7 +1407,7 @@ function activeView(){const t=document.querySelector(".tab.active");return t?t.d
 document.addEventListener("visibilitychange",()=>{if(!document.hidden){try{Promise.resolve(syncResults(true)).then(()=>{try{updateLiveBar();}catch(e){}if(activeView()==="lista"&&!typingScore())renderList();if(activeView()==="ranking"&&joined())loadRankBody(true);}).catch(()=>{});}catch(e){}}});
 window.addEventListener("focus",()=>{try{Promise.resolve(syncResults(true)).then(()=>{try{updateLiveBar();}catch(e){}if(activeView()==="lista"&&!typingScore())renderList();}).catch(()=>{});}catch(e){}});
 window.addEventListener("focus",()=>{if(activeView()==="ranking"&&joined())loadRankBody(true);});
-function schedulePush(){if(!joined())return;clearTimeout(pushTimer);pushTimer=setTimeout(pushState,1200);}
+function schedulePush(){if(!joined())return;clearTimeout(pushTimer);pushTimer=setTimeout(pushState,3000);}
 async function pushState(){
   if(!joined())return false;
   try{
@@ -1462,7 +1462,10 @@ function renderRanking(){
   $("#rankEdit").onclick=()=>{const old=player.name;player.name="";savePlayer();stopRankPoll();renderRanking();updateJoinNudge();const jn=$("#joinName");if(jn)jn.value=old;};
   loadRankBody();
   stopRankPoll();
-  rankPoll=setInterval(()=>{if(activeView()==="ranking"&&!document.hidden&&joined())loadRankBody(true);else stopRankPoll();},25000);
+  rankPoll=setInterval(()=>{
+    if(activeView()!=="ranking"||document.hidden||!joined()){stopRankPoll();return;}
+    loadRankBody(true);
+  },liveMatches().length>0?45000:90000); // 45s con partidos en vivo, 90s sin ellos
 }
 async function loadRankBody(silent){
   const body=$("#rankBody");if(!body)return;
@@ -1611,7 +1614,11 @@ try{renderActive();}catch(e){try{renderList();}catch(_){}}
 try{updateFab();}catch(e){}
 try{positionInd(true);}catch(e){}
 setTimeout(function(){try{positionInd();}catch(e){}},400);
-try{$("#btnSync").addEventListener("click",function(){syncResults(false);});}catch(e){}
+try{let lastManualSync=0;$("#btnSync").addEventListener("click",function(){
+  const now=Date.now();
+  if(now-lastManualSync<10000){toast("⏳ Espera un momento antes de actualizar de nuevo");return;}
+  lastManualSync=now;syncResults(false);
+});}catch(e){}
 try{showSyncIdle();}catch(e){}
 // al abrir: si hay partido en vivo sync inmediato y visible; si no, silencioso
 try{seedSeenIfNeeded();}catch(e){}
