@@ -12,5 +12,3 @@ export default async (req) => {
     return new Response(JSON.stringify({error:e.message,events:[]}), {status:500, headers:CORS});
   }
 };
-
-export const config = { path: "/api/scores" };
