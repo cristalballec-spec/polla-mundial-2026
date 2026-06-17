@@ -419,8 +419,14 @@ footer{border-top:1px solid var(--line);padding:22px 0;text-align:center;color:v
 .lv-vs{opacity:.7;font-weight:700;padding:0 3px}
 .lv-dot{width:8px;height:8px;border-radius:50%;background:#fff;display:inline-block;animation:lvpulse 1.4s infinite}
 @keyframes lvpulse{0%{box-shadow:0 0 0 0 rgba(255,255,255,.6)}70%{box-shadow:0 0 0 7px rgba(255,255,255,0)}100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}}
-.m-badge.b-live{background:#007481;color:#fff;display:inline-flex;align-items:center;gap:5px}
-.m-badge.b-live .lv-dot{width:7px;height:7px}
+.m-badge.b-live{background:#007481;color:#fff;display:inline-flex;align-items:center;gap:6px;animation:livePulseBadge 2s ease-in-out infinite}
+@keyframes livePulseBadge{0%,100%{box-shadow:0 0 0 0 rgba(0,116,129,.0)}50%{box-shadow:0 0 0 3px rgba(0,116,129,.18)}}
+/* Punto con ondas concéntricas tipo radar */
+.m-badge.b-live .lv-dot{position:relative;width:7px;height:7px;background:#fff;animation:none}
+.m-badge.b-live .lv-dot::before,
+.m-badge.b-live .lv-dot::after{content:"";position:absolute;left:50%;top:50%;width:7px;height:7px;border-radius:50%;border:1.5px solid rgba(255,255,255,.9);transform:translate(-50%,-50%) scale(1);opacity:.8;animation:radarWave 1.8s cubic-bezier(.2,.6,.4,1) infinite}
+.m-badge.b-live .lv-dot::after{animation-delay:.9s}
+@keyframes radarWave{0%{transform:translate(-50%,-50%) scale(1);opacity:.85}100%{transform:translate(-50%,-50%) scale(3.6);opacity:0}}
 .cheer.live{color:#007481;font-weight:800;display:inline-flex;align-items:center;gap:6px}
 .cheer.live .lv-dot{background:#007481;width:7px;height:7px}
 .match.is-live{box-shadow:0 0 0 2px #40E0D0,0 6px 18px rgba(64,224,208,.18)}
