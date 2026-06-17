@@ -1552,7 +1552,11 @@ async function loadRankBody(silent){
     lastRankData=await pullRanking();
     renderRankView();
   }catch(e){
-    body.innerHTML=`<div class="empty"><div class="big">📡</div>No se pudo cargar la tabla.<br><small>El ranking funciona solo en la versión web con internet.</small></div>`;
+    // Sin conexión al servidor: igual mostramos chips y datos locales (Mis partidos, Evento)
+    lastRankData=lastRankData||{leaderboard:[],results:{},entries:[]};
+    try{renderRankView();}catch(_){
+      body.innerHTML=`<div class="empty"><div class="big">📡</div>No se pudo cargar la tabla.<br><small>Revisa tu conexión.</small></div>`;
+    }
   }
 }
 function rankPositions(board){
@@ -1581,8 +1585,8 @@ function rankRowsHTML(board,crown){
 }
 function _out(h,a){return h>a?0:h<a?2:1;}
 function jornadaBoard(j){
-  const d=lastRankData;if(!d)return [];
-  const results=d.results||{};const entries=(d.entries||[]).slice();
+  const d=lastRankData||{entries:[],results:{}};
+  const results=Object.assign({},d.results||{},store.results||{});const entries=(d.entries||[]).slice();
   if(joined()&&!entries.some(e=>e.playerId===player.id)){
     const fp={};Object.keys(store.preds||{}).forEach(mid=>{if(results[mid])fp[mid]=store.preds[mid];});
     entries.push({playerId:player.id,name:player.name,preds:fp});
@@ -1602,8 +1606,8 @@ function jornadaBoard(j){
     .sort((a,b)=>b.pts-a.pts||b.exact-a.exact||(a.name||"").localeCompare(b.name||""));
 }
 function matchBoard(matchId){
-  const d=lastRankData;if(!d)return [];
-  const results=d.results||{};const entries=(d.entries||[]).slice();
+  const d=lastRankData||{entries:[],results:{}};
+  const results=Object.assign({},d.results||{},store.results||{});const entries=(d.entries||[]).slice();
   if(joined()&&!entries.some(e=>e.playerId===player.id)){
     const fp={};Object.keys(store.preds||{}).forEach(mid=>{if(results[mid])fp[mid]=store.preds[mid];});
     entries.push({playerId:player.id,name:player.name,preds:fp});
@@ -1667,8 +1671,9 @@ function renderMyMatchesByDate(results){
   return header+`<div class="mm-list">`+html+`</div>`;
 }
 function renderRankView(){
-  const body=$("#rankBody");if(!body||!lastRankData)return;
-  const d=lastRankData;
+  const body=$("#rankBody");if(!body)return;
+  // Si no hay datos del servidor, usar un objeto vacío para que "Mis partidos" y "Evento" funcionen con datos locales
+  const d=lastRankData||{leaderboard:[],results:{},entries:[]};
   // Combinar resultados del servidor con los locales frescos (ESPN) — local tiene prioridad
   const results=Object.assign({},d.results||{},store.results||{});
   const showEvent=EVENT_CFG.active;
