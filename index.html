@@ -995,8 +995,7 @@ function refreshCard(id){
   if(matchLive(m)){const bd=card.querySelector(".m-badge");const ft=card.querySelector(".m-foot");if(bd){bd.className="m-badge b-live";bd.innerHTML='<span class="lv-dot"></span>En vivo';}if(ft){ft.innerHTML='<span class="cheer live"><span class="lv-dot"></span>Partido en juego · pronóstico cerrado</span>';}return;}
   const ev=evalMatch(m);card.classList.remove("exact","partial","miss","pending");card.classList.add(ev.status);
   const badge=card.querySelector(".m-badge"),foot=card.querySelector(".m-foot");
-  const hasResult=hasScore(store.results[m.id]);
-  // badge: solo 3 estados
+  // badge: solo 3 estados (reusa hasResult ya declarado arriba)
   if(badge){if(hasResult){badge.className="m-badge b-fin";badge.textContent="Finalizado";}else{badge.className="m-badge b-pend";badge.textContent="Por jugar";}}
   // footer: detalle del resultado
   const cheerMap={exact:`<span class="cheer exact">🎉 ¡Clavaste el marcador!</span>`,partial:`<span class="cheer partial">👏 Acertaste el resultado</span>`,miss:`<span class="cheer miss">😬 Esta vez no… sigue</span>`,pending:hasResult?`<span class="cheer locked">🔒 Sin pronóstico`:`<span style="color:var(--ink-soft);font-weight:600">Pon tu pronóstico ⤴</span>`};
