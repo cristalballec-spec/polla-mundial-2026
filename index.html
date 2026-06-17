@@ -1278,8 +1278,9 @@ async function syncResults(silent){
     ev.forEach(e=>{
       const comp=(e.competitions&&e.competitions[0])||{};
       const st=(e.status&&e.status.type)||{};
-      const finished = st.state==="post" || st.completed===true; // solo partidos terminados
-      if(!finished)return;
+      const finished = st.state==="post" || st.completed===true;
+      const inProgress = st.state==="in"; // en vivo (incluye medio tiempo)
+      if(!finished && !inProgress)return;
       const cs=comp.competitors||[];
       if(cs.length<2)return;
       const byCode={};
@@ -1287,7 +1288,7 @@ async function syncResults(silent){
       // emparejar por el PAR de códigos (sin importar orden local/visitante)
       const target=MATCHES.find(x=>byCode[x.home]!=null&&byCode[x.away]!=null);
       if(!target)return;
-      if(!matchFinal(target))return;
+      if(!matchFinal(target)&&!inProgress)return; // permitir en vivo
       const hs=byCode[target.home], as=byCode[target.away];
       if(hs==null||as==null||hs===""||as==="")return;
       const cur=store.results[target.id];
