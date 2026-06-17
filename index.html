@@ -580,11 +580,10 @@ select.ob-inp{cursor:pointer;appearance:none;-webkit-appearance:none;background-
     <label class="ob-l">Liga</label>
     <select id="obLeagueSel" class="ob-inp">
       <option value="STATUS" selected>STATUS · General</option>
-      <option value="EVENTO-F1">🏆 EVENTO F1 · Partners</option>
       <option value="__new__">➕ Otra liga (nueva)…</option>
     </select>
     <input id="obLeague" class="ob-inp" type="text" maxlength="24" placeholder="Código de tu liga nueva" autocomplete="off" style="display:none">
-    <p class="ob-hint">Elige <b>STATUS</b> para la tabla general o <b>EVENTO F1</b> para el premio del evento. Mismo código = misma tabla.</p>
+    <p class="ob-hint">Por defecto compites en <b>STATUS</b>, donde está el premio del evento y la tabla general. Mismo código = misma tabla.</p>
     <button id="obJoin" class="ob-btn">Entrar a competir</button>
     <button id="obSkip" class="ob-skip">Explorar primero</button>
   </div>
@@ -1388,7 +1387,7 @@ const DEFAULT_LEAGUE="STATUS";
 const EVENT_CFG={
   active:true,
   matchId:"G3",              // MEX vs KOR (jueves 18, 20:00 EC)
-  league:"EVENTO-F1",        // liga del evento
+  league:"STATUS",           // el evento usa la liga general STATUS
   title:"🏆 EVENTO F1 · Premio en vivo",
   subtitle:"Quien acierte MÉXICO vs COREA DEL SUR gana el premio",
   date:"2026-06-18"
@@ -1500,8 +1499,7 @@ function renderRanking(){
   const w=$("#rankWrap");if(!w)return;
   if(!joined()){
     const LEAGUES=[
-      {code:"STATUS",label:"STATUS · General"},
-      {code:"EVENTO-F1",label:"🏆 EVENTO F1 · Partners"}
+      {code:"STATUS",label:"STATUS · General"}
     ];
     const curLg=(player.league||DEFAULT_LEAGUE).toUpperCase();
     const isKnown=LEAGUES.some(l=>l.code===curLg);
