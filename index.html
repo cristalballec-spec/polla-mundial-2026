@@ -444,6 +444,7 @@ footer{border-top:1px solid var(--line);padding:22px 0;text-align:center;color:v
 .event-banner .eb-sc{background:rgba(255,255,255,.14);border-radius:8px;padding:3px 12px;font-family:'Anton',sans-serif;font-size:18px;letter-spacing:.02em}
 .event-banner.live .eb-sc{background:#007481;animation:livePulseBadge 1.6s ease-in-out infinite}
 .event-banner .eb-sub{font-size:11.5px;color:#C9C2B5;margin-top:8px;font-weight:600}
+.event-banner .eb-winners{margin-top:12px;background:linear-gradient(135deg,#E0B43A,#B8901E);color:#1A1815;font-weight:800;font-size:13.5px;border-radius:10px;padding:9px 14px;text-align:center;box-shadow:0 3px 12px rgba(184,144,30,.35)}
 .rank-row.crowned{border-color:var(--gold);background:linear-gradient(90deg,rgba(64,224,208,.12),var(--card));box-shadow:0 0 0 1px var(--gold)}
 /* CINEMATIC CELEBRACIONES */
 .cine{position:fixed;inset:0;z-index:300;pointer-events:none;overflow:hidden}
@@ -1580,12 +1581,22 @@ function renderRankView(){
     const em=eventMatch();const r=results[EVENT_CFG.matchId];
     const live=em&&matchLive(em);const fin=hasScore(r);
     const scoreTxt=fin?`${r.h} - ${r.a}`:(live?"EN JUEGO":"Por jugar");
-    eventBanner=`<div class="event-banner ${live?'live':''}">
+    // Contar ganadores (los del puntaje máximo > 0)
+    let winnersBadge="";
+    if(fin&&board.length&&board[0].pts>0){
+      const topPts=board[0].pts;
+      const winners=board.filter(p=>p.pts===topPts);
+      const exactCount=winners.filter(p=>p.exact>0).length;
+      const label=topPts===5?"clavaron el marcador":"acertaron el resultado";
+      winnersBadge=`<div class="eb-winners">🎉 ${winners.length} ganador${winners.length>1?"es":""} · ${label} (${topPts} pt${topPts>1?"s":""})</div>`;
+    }
+    eventBanner=`<div class="event-banner ${live?'live':''} ${fin?'done':''}">
       <div class="eb-top">${EVENT_CFG.title}</div>
       <div class="eb-match">${FLAG[em.home]} ${NAME[em.home]} <span class="eb-sc">${scoreTxt}</span> ${NAME[em.away]} ${FLAG[em.away]}</div>
       <div class="eb-sub">${EVENT_CFG.subtitle} · 5pt exacto / 3pt resultado</div>
+      ${winnersBadge}
     </div>`;
-    foot=`🏆 Solo cuenta el partido del evento. ${fin?"Resultado final cargado.":"Se decide al terminar el partido."}`;
+    foot=`🏆 Solo cuenta el partido del evento. ${fin?"Todos los marcados con 👑 ganan el premio.":"Se decide al terminar el partido."}`;
   }else{
     crown=true;board=jornadaBoard(+rankView);
     foot=`👑 Corona al mejor de la jornada ${rankView}. Solo cuentan los partidos de esa fecha.`;
