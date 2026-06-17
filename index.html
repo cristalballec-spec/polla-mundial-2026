@@ -1283,7 +1283,7 @@ async function syncResults(silent){
     const data=await res.json();
     const ev=(data&&data.events)||[];
     if(!ev.length)throw new Error("sin datos");
-    let updated=0;
+    let updated=0;const debugMsgs=[];
     ev.forEach(e=>{
       const comp=(e.competitions&&e.competitions[0])||{};
       const st=(e.status&&e.status.type)||{};
@@ -1296,12 +1296,13 @@ async function syncResults(silent){
       cs.forEach(c=>{const ab=((c.team&&c.team.abbreviation)||"").toUpperCase();if(ab)byCode[ab]=c.score;});
       // emparejar por el PAR de códigos (sin importar orden local/visitante)
       const target=MATCHES.find(x=>byCode[x.home]!=null&&byCode[x.away]!=null);
-      if(!target)return;
-      if(!matchFinal(target)&&!inProgress)return; // permitir en vivo
+      if(!target){if(inProgress)debugMsgs.push("NO_MATCH:"+Object.keys(byCode).join("+"));return;}
+      if(!matchFinal(target)&&!inProgress){debugMsgs.push("NOT_FINAL:"+target.id);return;}
       const hs=byCode[target.home], as=byCode[target.away];
-      if(hs==null||as==null||hs===""||as==="")return;
+      if(hs==null||as==null||hs===""||as===""){debugMsgs.push("NO_SCORE:"+target.id);return;}
       // Siempre guardar si está en vivo o terminado
       store.results[target.id]={h:String(hs),a:String(as)};
+      debugMsgs.push("SAVED:"+target.id+"="+hs+":"+as);
       updated++;
     });
     store.lastSync=new Date().toISOString();save();schedulePush();
@@ -1310,8 +1311,10 @@ async function syncResults(silent){
     const v=document.querySelector(".tab.active").dataset.view;
     if(v==="lista")renderList();else if(v==="grupos")renderGroups();else if(v==="calendario")renderCalendar();
     if(silent){showSyncIdle();}
-    else{setSyncInfo(`<span class="live-dot"></span> ${updated>0?"✅ "+updated+" marcador"+(updated>1?"es":"")+" actualizado"+(updated>1?"s":""):"Ya estabas al día"} · <b style="color:var(--field)">${relTime(store.lastSync)}</b>`,"");
-      toast(updated>0?`✅ ${updated} resultado(s) actualizado(s)`:"👍 Ya estabas al día");setTimeout(showSyncIdle,3500);}
+    else{
+      const dbg=debugMsgs.slice(-3).join(" | ");
+      setSyncInfo(`<span class="live-dot"></span> ${updated>0?"✅ "+updated+" marcador"+(updated>1?"es":"")+" actualizado"+(updated>1?"s":""):"Ya estabas al día"} · <b style="color:var(--field)">${relTime(store.lastSync)}</b>`,"");
+      toast(updated>0?`✅ ${updated} resultado(s) actualizado(s)`:`👍 Al día | ${dbg||"sin partidos activos"}`);setTimeout(showSyncIdle,4500);}
     return true;
   }catch(err){
     if(!silent){setSyncInfo(`<span class="live-dot" style="background:var(--miss);animation:none"></span> Sin conexión — carga los marcadores a mano`,"err");toast("⚠️ Sin conexión a la fuente de resultados");setTimeout(showSyncIdle,4000);}
