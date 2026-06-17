@@ -753,8 +753,9 @@ function load(){
 function save(){try{localStorage.setItem(LS_KEY,JSON.stringify(store));}catch(e){}}
 load();
 MATCHES.forEach(m=>{if(m.real&&!(m.id in store.results))store.results[m.id]={h:m.real.h,a:m.real.a};});
-// Purga resultados inválidos: partidos que aún no terminan (saque+135min) o valores corruptos
-Object.keys(store.results).forEach(id=>{const m=MATCHES.find(x=>x.id===id);const r=store.results[id];const okNum=r&&/^\d{1,2}$/.test(String(r.h))&&/^\d{1,2}$/.test(String(r.a));if(!m||!okNum||!matchFinal(m))delete store.results[id];});
+// Purga resultados inválidos: solo borra si el partido no ha arrancado aún Y los valores son corruptos
+Object.keys(store.results).forEach(id=>{const m=MATCHES.find(x=>x.id===id);const r=store.results[id];const okNum=r&&/^\d{1,2}$/.test(String(r.h))&&/^\d{1,2}$/.test(String(r.a));if(!m||!okNum)delete store.results[id];// nunca borrar si el partido ya arrancó (en vivo o terminado)
+});
 save();
 
 /* ===== HELPERS ===== */
@@ -1598,9 +1599,12 @@ try{positionInd(true);}catch(e){}
 setTimeout(function(){try{positionInd();}catch(e){}},400);
 try{$("#btnSync").addEventListener("click",function(){syncResults(false);});}catch(e){}
 try{showSyncIdle();}catch(e){}
-// al abrir: la app se queda arriba; se intenta sincronizar marcadores una vez (si hay internet)
+// al abrir: si hay partido en vivo sync inmediato y visible; si no, silencioso
 try{seedSeenIfNeeded();}catch(e){}
-try{syncResults(true);}catch(e){}
+try{
+  const hasLive=liveMatches().length>0;
+  syncResults(!hasLive).then(()=>{try{updateLiveBar();}catch(e){}if(activeView()==="lista"&&!typingScore())renderList();}).catch(()=>{});
+}catch(e){try{syncResults(true);}catch(e){}}
 try{liveHeartbeat();}catch(e){}
 try{updateJoinNudge();}catch(e){}
 try{showOnboardIfNeeded();}catch(e){}
