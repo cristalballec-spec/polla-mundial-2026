@@ -1247,14 +1247,23 @@ $("#brProject").addEventListener("click",()=>{projectFromGroups();renderBracket(
 $("#brClear").addEventListener("click",()=>{if(confirm("¿Vaciar el cuadro de eliminatorias? (no afecta la fase de grupos)")){store.bracket={};save();renderBracket();refreshHeader();toast("Cuadro vaciado");}});
 $("#brPhaseChips").addEventListener("click",e=>{const c=e.target.closest(".chip");if(!c)return;$$("#brPhaseChips .chip").forEach(x=>x.classList.remove("active"));c.classList.add("active");brPhase=c.dataset.ph;renderBracket();});
 
-/* ===== RESUMEN ===== */
+/* ===== RESUMEN (Mi Polla) ===== */
 function renderResultFeed(){
   const cont=$("#resultFeed");
   const mine=MATCHES.filter(m=>hasScore(store.preds[m.id]));
   if(!mine.length){cont.innerHTML=`<div class="empty"><div class="big">⚽</div>Aún no has puesto pronósticos.<br>Ve a <b>Lista</b>, escribe tu marcador en "Tu pronóstico" y aparecerá aquí.</div>`;return;}
-  const decided=mine.filter(m=>evalMatch(m).status!=="pending").sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id));
-  const pending=mine.filter(m=>evalMatch(m).status==="pending").sort((a,b)=>a.date.localeCompare(b.date)||a.id.localeCompare(b.id));
-  cont.innerHTML=[...decided,...pending].map(m=>grpCard(m)).join("");
+  // Ordenar por fecha y hora, agrupando por día
+  const sorted=mine.slice().sort((a,b)=>(a.date||"").localeCompare(b.date||"")||(a.time||"").localeCompare(b.time||"")||a.id.localeCompare(b.id));
+  let html="",curDate=null;
+  sorted.forEach((m,idx)=>{
+    if(m.date!==curDate){
+      curDate=m.date;
+      const dt=parseD(m.date);const isT=TODAY&&dt.getTime()===TODAY.getTime();
+      html+=`<div class="day-head"><span class="dnum ${isT?'today-badge':''}">${isT?"HOY":fmtLong(m.date).split(" ")[0].toUpperCase()}</span><h3>${fmtLong(m.date)}</h3><span class="ln"></span></div>`;
+    }
+    html+=grpCard(m,idx);
+  });
+  cont.innerHTML=html;
 }
 
 /* ===== NAV ===== */
