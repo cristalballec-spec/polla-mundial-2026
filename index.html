@@ -1310,11 +1310,16 @@ async function syncResults(silent){
     refreshHeader();refreshEcuCounter();
     const v=document.querySelector(".tab.active").dataset.view;
     if(v==="lista")renderList();else if(v==="grupos")renderGroups();else if(v==="calendario")renderCalendar();
-    if(silent){showSyncIdle();}
+    const liveCount=ev.filter(e=>((e.status&&e.status.type)||{}).state==="in").length;
+    const dbg=debugMsgs.slice(-4).join(" · ")||("ESPN dice: "+liveCount+" en vivo, "+ev.length+" eventos");
+    if(silent){
+      // En modo silencioso, si hay partidos en vivo igual mostramos debug fijo
+      if(liveCount>0||debugMsgs.length)setSyncInfo(`🔎 ${dbg}`,"");
+      else showSyncIdle();
+    }
     else{
-      const dbg=debugMsgs.slice(-3).join(" | ");
-      setSyncInfo(`<span class="live-dot"></span> ${updated>0?"✅ "+updated+" marcador"+(updated>1?"es":"")+" actualizado"+(updated>1?"s":""):"Ya estabas al día"} · <b style="color:var(--field)">${relTime(store.lastSync)}</b>`,"");
-      toast(updated>0?`✅ ${updated} resultado(s) actualizado(s)`:`👍 Al día | ${dbg||"sin partidos activos"}`);setTimeout(showSyncIdle,4500);}
+      setSyncInfo(`🔎 DEBUG: ${dbg}`,"");
+    }
     return true;
   }catch(err){
     if(!silent){setSyncInfo(`<span class="live-dot" style="background:var(--miss);animation:none"></span> Sin conexión — carga los marcadores a mano`,"err");toast("⚠️ Sin conexión a la fuente de resultados");setTimeout(showSyncIdle,4000);}
