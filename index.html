@@ -984,6 +984,14 @@ document.addEventListener("input",e=>{const el=e.target;
 });
 function refreshCard(id){
   const m=MATCHES.find(x=>x.id===id);const card=document.querySelector(`.match[data-id="${id}"]`);if(!card||!m)return;
+  // Actualizar marcador OFICIAL siempre (en vivo o terminado)
+  const r=store.results[m.id]||{h:"",a:""};const hasResult=hasScore(r);
+  const rb=card.querySelector(".real-board");
+  if(rb){
+    rb.classList.toggle("has",hasResult);
+    const sc=rb.querySelector(".rb-sc");
+    if(sc){sc.innerHTML=hasResult?`${r.h}<b>:</b>${r.a}`:'<span class="rb-empty">– : –</span>';}
+  }
   if(matchLive(m)){const bd=card.querySelector(".m-badge");const ft=card.querySelector(".m-foot");if(bd){bd.className="m-badge b-live";bd.innerHTML='<span class="lv-dot"></span>En vivo';}if(ft){ft.innerHTML='<span class="cheer live"><span class="lv-dot"></span>Partido en juego · pronóstico cerrado</span>';}return;}
   const ev=evalMatch(m);card.classList.remove("exact","partial","miss","pending");card.classList.add(ev.status);
   const badge=card.querySelector(".m-badge"),foot=card.querySelector(".m-foot");
@@ -1292,9 +1300,9 @@ async function syncResults(silent){
       if(!matchFinal(target)&&!inProgress)return; // permitir en vivo
       const hs=byCode[target.home], as=byCode[target.away];
       if(hs==null||as==null||hs===""||as==="")return;
-      const cur=store.results[target.id];
-      if(!cur||String(cur.h)!==String(hs)||String(cur.a)!==String(as)){store.results[target.id]={h:String(hs),a:String(as)};updated++;}
-      else if(inProgress){updated++;} // forzar re-render en partidos en vivo aunque el marcador no cambió
+      // Siempre guardar si está en vivo o terminado
+      store.results[target.id]={h:String(hs),a:String(as)};
+      updated++;
     });
     store.lastSync=new Date().toISOString();save();schedulePush();
     try{checkCelebrations();}catch(e){}
