@@ -478,6 +478,10 @@ select.join-inp{cursor:pointer;appearance:none;-webkit-appearance:none;backgroun
 .ebr-item:last-of-type{border-bottom:none}
 .ebr-item b{font-weight:700}
 .ebr-item span{font-weight:800;color:var(--field);background:rgba(0,116,129,.08);border-radius:20px;padding:2px 11px;font-size:12.5px}
+.ebr-item{gap:8px}
+.ebr-item b{flex:1}
+.ebr-pick{font-weight:800;color:#9a7415!important;background:rgba(184,144,30,.12)!important;border-radius:20px;padding:2px 11px;font-size:12.5px;min-width:42px;text-align:center}
+.ebr-title .ebr-mine{font-size:10.5px;font-weight:700;color:#9a7415;background:rgba(184,144,30,.12);border-radius:20px;padding:2px 9px;float:right}
 .ebr-note{margin-top:10px;font-size:11.5px;color:var(--ink-soft);line-height:1.5;font-weight:600}
 /* Modal del evento */
 .evm{position:fixed;inset:0;z-index:200;background:rgba(20,18,15,.6);backdrop-filter:blur(3px);display:flex;align-items:flex-end;justify-content:center;padding:0}
@@ -1958,10 +1962,17 @@ function renderRankView(){
       ${winnersBadge}
     </div>
     <div class="eb-rules">
-      <div class="ebr-title">Cómo se gana el premio</div>
-      <div class="ebr-item"><b>Marcador exacto</b><span>+5</span></div>
-      <div class="ebr-item"><b>Resultado (gana/empata)</b><span>+3</span></div>
-      ${EVENT_CFG.preds.map(pd=>`<div class="ebr-item"><b>${pd.label}</b><span>+${pd.pts}</span></div>`).join("")}
+      <div class="ebr-title">Cómo se gana el premio <span class="ebr-mine">tu elección</span></div>
+      ${(()=>{
+        const myPred=store.preds&&store.preds[EVENT_CFG.matchId];
+        const myMarc=hasScore(myPred)?`${myPred.h}:${myPred.a}`:"—";
+        const myEx=(store.extras&&store.extras[EVENT_CFG.matchId])||{};
+        const lbl=v=>v==null||v===""?"—":(v==="NONE"?"Ninguno":v==="DRAW"?"Empate":v);
+        let rows=`<div class="ebr-item"><b>Marcador exacto</b><span class="ebr-pick">${myMarc}</span><span>+5</span></div>`;
+        rows+=`<div class="ebr-item"><b>Resultado (gana/empata)</b><span class="ebr-pick">${myMarc}</span><span>+3</span></div>`;
+        rows+=EVENT_CFG.preds.map(pd=>`<div class="ebr-item"><b>${pd.label}</b><span class="ebr-pick">${lbl(myEx[pd.key])}</span><span>+${pd.pts}</span></div>`).join("");
+        return rows;
+      })()}
       <div class="ebr-note">Todo suma. El que más puntos junte gana. Si hay empate, ganan todos los que empaten.</div>
     </div>`;
     foot=`🏆 Predicciones en la ventana del evento (botón arriba). ${fin?"Los 👑 ganan el premio.":"Se cierran cuando empieza el partido."}`;
