@@ -1851,7 +1851,10 @@ function matchBoard(matchId){
   }
   const s=eventStats||{}; // datos reales: firstGoal, firstHalf, firstCorner
   const em=eventMatch();
-  const evStarted=em&&matchStarted(em); // los puntos del evento solo cuentan si el partido arrancó
+  // Para el evento, los puntos solo cuentan si YA PASÓ LA HORA DEL SAQUE por reloj
+  // (no por tener un resultado cargado manualmente antes de tiempo)
+  const ko=em?kickoffTs(em):null;
+  const evStarted=ko!=null&&Date.now()>=ko;
   const useExtras=EVENT_CFG.extras&&matchId===EVENT_CFG.matchId&&evStarted;
   return entries.map(e=>{
     const p=(e.preds||{})[matchId];const r=results[matchId];
