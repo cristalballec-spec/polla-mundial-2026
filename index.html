@@ -1091,6 +1091,7 @@ document.addEventListener("click",e=>{
   const m=eventMatch();if(!m)return;
   if(matchStarted(m))return; // cerrado
   const key=b.dataset.evk,val=b.dataset.val;
+  if(!store.extras)store.extras={};
   if(!store.extras[m.id])store.extras[m.id]={};
   store.extras[m.id][key]=(store.extras[m.id][key]===val)?null:val; // toggle
   save();showSaveStatus("saving");pendingUserSave=true;schedulePush();
@@ -1420,8 +1421,8 @@ $("#calContainer").addEventListener("click",e=>{const p=e.target.closest("[data-
 /* tools */
 $("#btnExport").addEventListener("click",()=>{const blob=new Blob([JSON.stringify(store,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="mi-polla-mundial-2026.json";a.click();toast("📦 Polla exportada");});
 $("#btnImport").addEventListener("click",()=>$("#fileImport").click());
-$("#fileImport").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{const s=JSON.parse(rd.result);store=Object.assign({preds:{},results:{},bracket:{}},s);save();renderActive();refreshEcuCounter();updateJoinNudge();toast("✅ Polla importada");}catch(err){toast("⚠️ Archivo inválido");}};rd.readAsText(f);});
-$("#btnReset").addEventListener("click",()=>{if(confirm("¿Borrar TODOS tus pronósticos, marcadores editados y el cuadro? Se recargan solo los resultados oficiales ya jugados.")){store={preds:{},results:{},bracket:{}};MATCHES.forEach(m=>{if(m.real)store.results[m.id]={h:m.real.h,a:m.real.a};});save();renderActive();refreshEcuCounter();updateJoinNudge();toast("🗑️ Predicciones reiniciadas");}});
+$("#fileImport").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{const s=JSON.parse(rd.result);store=Object.assign({preds:{},results:{},bracket:{},finished:{},extras:{},eventStats:null},s);save();renderActive();refreshEcuCounter();updateJoinNudge();toast("✅ Polla importada");}catch(err){toast("⚠️ Archivo inválido");}};rd.readAsText(f);});
+$("#btnReset").addEventListener("click",()=>{if(confirm("¿Borrar TODOS tus pronósticos, marcadores editados y el cuadro? Se recargan solo los resultados oficiales ya jugados.")){store={preds:{},results:{},bracket:{},finished:{},extras:{},eventStats:null};MATCHES.forEach(m=>{if(m.real)store.results[m.id]={h:m.real.h,a:m.real.a};});eventStats=null;save();renderActive();refreshEcuCounter();updateJoinNudge();toast("🗑️ Predicciones reiniciadas");}});
 
 /* ===== SINCRONIZACIÓN AUTOMÁTICA (TheSportsDB, CORS abierto) ===== */
 const EN2CODE={"Mexico":"MEX","South Africa":"RSA","South Korea":"KOR","Czech Republic":"CZE","Czechia":"CZE","Canada":"CAN","Bosnia-Herzegovina":"BIH","Bosnia and Herzegovina":"BIH","Qatar":"QAT","Switzerland":"SUI","Brazil":"BRA","Morocco":"MAR","Haiti":"HAI","Scotland":"SCO","USA":"USA","United States":"USA","Paraguay":"PAR","Australia":"AUS","Turkey":"TUR","Türkiye":"TUR","Germany":"GER","Curaçao":"CUW","Curacao":"CUW","Ivory Coast":"CIV","Côte d'Ivoire":"CIV","Cote d'Ivoire":"CIV","Ecuador":"ECU","Netherlands":"NED","Japan":"JPN","Sweden":"SWE","Tunisia":"TUN","Belgium":"BEL","Egypt":"EGY","Iran":"IRN","New Zealand":"NZL","Spain":"ESP","Cape Verde":"CPV","Cabo Verde":"CPV","Saudi Arabia":"KSA","Uruguay":"URU","France":"FRA","Senegal":"SEN","Iraq":"IRQ","Norway":"NOR","Argentina":"ARG","Algeria":"ALG","Austria":"AUT","Jordan":"JOR","Portugal":"POR","DR Congo":"COD","Congo DR":"COD","Uzbekistan":"UZB","Colombia":"COL","England":"ENG","Croatia":"CRO","Ghana":"GHA","Panama":"PAN"};
@@ -1657,6 +1658,7 @@ function showOnboardIfNeeded(){
     showSaveStatus("saving");pendingUserSave=true;pushState();
     if(activeView()==="ranking")renderRanking();
     toast("🏅 ¡Estás dentro! Liga "+lg);
+    setTimeout(()=>{try{goToEventIfToday();}catch(e){}},200);
   };
   const skip=$("#obSkip");if(skip)skip.onclick=dismiss;
 }
@@ -2091,13 +2093,11 @@ try{liveHeartbeat();}catch(e){}
 try{updateJoinNudge();}catch(e){}
 try{showOnboardIfNeeded();}catch(e){}
 // HOY (día del evento): al abrir, ir directo a Ranking → Evento para evitar confusión
-try{
-  (function(){
+function goToEventIfToday(){
+  try{
     if(!EVENT_CFG.active)return;
-    // Solo el día del evento
     const todayStr=(()=>{try{return new Intl.DateTimeFormat("en-CA",{timeZone:"America/Guayaquil",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());}catch(e){return "";}})();
     if(todayStr!==EVENT_CFG.date)return;
-    // Solo si ya tiene nombre (si no, primero el onboard)
     if(!joined())return;
     const tab=document.querySelector('.tab[data-view="ranking"]');
     if(!tab)return;
@@ -2108,8 +2108,9 @@ try{
     rankView="event";
     try{renderActive();}catch(e){}
     try{updateFab();positionInd();}catch(e){}
-  })();
-}catch(e){}
+  }catch(e){}
+}
+setTimeout(goToEventIfToday,300);
 </script>
 </body>
 </html>
