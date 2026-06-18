@@ -47,7 +47,7 @@ export default async (req)=>{
   const entries=players.map(pl=>{
     const preds=pl.preds||{};const fp={};
     Object.keys(preds).forEach(mid=>{if(results[mid])fp[mid]=preds[mid];});
-    return{playerId:pl.playerId||"",name:pl.name||"Anónimo",preds:fp};
+    return{playerId:pl.playerId||"",name:pl.name||"Anónimo",preds:fp,extras:pl.extras||{}};
   });
   return new Response(JSON.stringify({code,results,leaderboard:board,entries,players:board.length}),{headers:CORS});
 };

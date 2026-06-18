@@ -50,10 +50,11 @@ export default async (req)=>{
   const preds=(body.preds&&typeof body.preds==="object")?body.preds:{};
   const bracket=(body.bracket&&typeof body.bracket==="object")?body.bracket:{};
   const results=(body.results&&typeof body.results==="object")?body.results:{};
+  const extras=(body.extras&&typeof body.extras==="object")?body.extras:{};
 
   const store=getStore("polla");
   // 1) Guardar el blob propio del jugador (sin condición de carrera)
-  await store.setJSON(`liga:${code}:p:${playerId}`,{playerId,name,preds,bracket,updatedAt:Date.now()});
+  await store.setJSON(`liga:${code}:p:${playerId}`,{playerId,name,preds,bracket,extras,updatedAt:Date.now()});
 
   // 1b) Índice de jugadores de la liga (para listado inmediato, sin depender del list eventual)
   try{
