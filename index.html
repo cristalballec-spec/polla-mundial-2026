@@ -1992,6 +1992,8 @@ function renderRankView(){
 let lastLiveSync=0,liveSig="",prevLiveIds=[];
 // Minutos desde el kickoff en los que se fuerza sync: 25min, MT(45), 70min, final(95)
 const LIVE_SYNC_MINUTES=[25,45,70,95];
+// Para el partido del EVENTO: refrescar cada 15 min + fin del 1er tiempo (45-47') + final (95')
+const EVENT_SYNC_MINUTES=[15,30,45,46,47,60,75,90,93,95,97];
 const firedSyncs={};
 function checkScheduledSyncs(){
   const now=Date.now();
@@ -2001,7 +2003,9 @@ function checkScheduledSyncs(){
     const ko=kickoffTs(m);if(ko==null)return;
     const elapsed=Math.floor((now-ko)/60000);
     if(!firedSyncs[m.id])firedSyncs[m.id]=new Set();
-    LIVE_SYNC_MINUTES.forEach(target=>{
+    // El partido del evento usa su propio calendario más frecuente
+    const targets=(EVENT_CFG.active&&m.id===EVENT_CFG.matchId)?EVENT_SYNC_MINUTES:LIVE_SYNC_MINUTES;
+    targets.forEach(target=>{
       if(elapsed>=target&&elapsed<=target+2&&!firedSyncs[m.id].has(target)){
         firedSyncs[m.id].add(target);needSync=true;
       }
@@ -2034,7 +2038,13 @@ function liveHeartbeat(){
   const dueHourly=(lv.length&&Date.now()-lastLiveSync>=480000);
   if(ended||scheduledSync||dueHourly){
     lastLiveSync=Date.now();
-    try{Promise.resolve(syncResults(true)).then(()=>{try{updateLiveBar();}catch(e){}if(activeView()==="lista"&&!typingScore())renderList();if(activeView()==="ranking"&&joined())loadRankBody(true);}).catch(()=>{});}catch(e){}
+    try{Promise.resolve(syncResults(true)).then(()=>{
+      try{updateLiveBar();}catch(e){}
+      if(activeView()==="lista"&&!typingScore())renderList();
+      if(activeView()==="ranking"&&joined())loadRankBody(true);
+      // Si la ventana del evento está abierta, refrescar su contenido con los datos nuevos
+      try{const ovm=$("#eventModal");if(ovm&&!ovm.hidden)$("#evmBody").innerHTML=buildEventModal();}catch(e){}
+    }).catch(()=>{});}catch(e){}
   }
   if(changed&&activeView()==="lista"&&!typingScore())renderList();
 }
