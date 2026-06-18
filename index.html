@@ -1709,7 +1709,12 @@ async function pullRanking(){
   if(!r.ok)throw new Error("net");
   const data=await r.json();
   // Fusionar datos reales del evento del servidor con los locales (servidor manda si existe)
-  if(data.eventStats){eventStats=Object.assign({},eventStats,data.eventStats);store.eventStats=eventStats;save();}
+  // Datos reales del evento: el servidor manda. Si viene vacío/null, limpiar el local también.
+  if(data.eventStats&&Object.keys(data.eventStats).length){
+    eventStats=Object.assign({},data.eventStats);store.eventStats=eventStats;save();
+  }else if(data.hasOwnProperty("eventStats")){
+    eventStats=null;store.eventStats=null;save();
+  }
   return data;
 }
 function shareLeague(){
@@ -2085,6 +2090,26 @@ try{
 try{liveHeartbeat();}catch(e){}
 try{updateJoinNudge();}catch(e){}
 try{showOnboardIfNeeded();}catch(e){}
+// HOY (día del evento): al abrir, ir directo a Ranking → Evento para evitar confusión
+try{
+  (function(){
+    if(!EVENT_CFG.active)return;
+    // Solo el día del evento
+    const todayStr=(()=>{try{return new Intl.DateTimeFormat("en-CA",{timeZone:"America/Guayaquil",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());}catch(e){return "";}})();
+    if(todayStr!==EVENT_CFG.date)return;
+    // Solo si ya tiene nombre (si no, primero el onboard)
+    if(!joined())return;
+    const tab=document.querySelector('.tab[data-view="ranking"]');
+    if(!tab)return;
+    $$(".tab").forEach(t=>t.classList.remove("active"));
+    $$(".view").forEach(v=>v.classList.remove("active"));
+    tab.classList.add("active");
+    const view=$("#view-ranking");if(view)view.classList.add("active");
+    rankView="event";
+    try{renderActive();}catch(e){}
+    try{updateFab();positionInd();}catch(e){}
+  })();
+}catch(e){}
 </script>
 </body>
 </html>
