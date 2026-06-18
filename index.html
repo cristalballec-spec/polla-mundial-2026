@@ -1838,12 +1838,15 @@ function matchBoard(matchId){
     const fp={};Object.keys(store.preds||{}).forEach(mid=>{if(results[mid])fp[mid]=store.preds[mid];});
     entries.push({playerId:player.id,name:player.name,preds:fp,extras:store.extras||{}});
   }
-  const s=eventStats||{}; // datos reales: firstGoal, yellow, red, firstCorner
-  const useExtras=EVENT_CFG.extras&&matchId===EVENT_CFG.matchId;
+  const s=eventStats||{}; // datos reales: firstGoal, firstHalf, firstCorner
+  const em=eventMatch();
+  const evStarted=em&&matchStarted(em); // los puntos del evento solo cuentan si el partido arrancó
+  const useExtras=EVENT_CFG.extras&&matchId===EVENT_CFG.matchId&&evStarted;
   return entries.map(e=>{
     const p=(e.preds||{})[matchId];const r=results[matchId];
     let pts=0,exact=0,hasP=hasScore(p);
-    if(hasScore(r)&&hasP){
+    // El marcador solo puntúa si el partido arrancó (evita puntos por resultado cargado por error)
+    if(evStarted&&hasScore(r)&&hasP){
       if(+r.h===+p.h&&+r.a===+p.a){pts=5;exact=1;}
       else if(_out(+r.h,+r.a)===_out(+p.h,+p.a))pts=3;
     }
@@ -1855,7 +1858,7 @@ function matchBoard(matchId){
         if(real!=null&&real!==""&&pred!=null&&pred!==""&&String(pred)===String(real))bonus+=pd.pts;
       });
     }
-    const hasExtra=useExtras&&EVENT_CFG.preds.some(pd=>ex[pd.key]!=null&&ex[pd.key]!=="");
+    const hasExtra=EVENT_CFG.extras&&matchId===EVENT_CFG.matchId&&EVENT_CFG.preds.some(pd=>ex[pd.key]!=null&&ex[pd.key]!=="");
     return{playerId:e.playerId,name:e.name,pts:pts+bonus,base:pts,bonus,exact,predCount:hasP?1:0,pred:hasP?(p.h+":"+p.a):null,hasExtra};
   }).filter(x=>x.predCount>0||x.hasExtra||x.playerId===player.id)
     .sort((a,b)=>b.pts-a.pts||b.exact-a.exact||(a.name||"").localeCompare(b.name||""));
