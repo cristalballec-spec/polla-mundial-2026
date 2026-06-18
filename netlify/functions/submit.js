@@ -43,6 +43,15 @@ export default async (req)=>{
     return new Response(JSON.stringify({ok:true,code:ccode,kept:Object.keys(cleaned),removed}),{headers:CORS});
   }
 
+  // Acción administrativa: limpiar los datos reales del evento (firstGoal/firstHalf/firstCorner)
+  if(body.action==="clearevent"){
+    if(body.secret!==SECRET)return new Response(JSON.stringify({error:"forbidden"}),{status:403,headers:CORS});
+    const ecode=cleanCode(body.league);
+    const estore=getStore("polla");
+    try{await estore.delete(`liga:${ecode}:eventStats`);}catch(e){}
+    return new Response(JSON.stringify({ok:true,cleared:"eventStats",code:ecode}),{headers:CORS});
+  }
+
   const code=cleanCode(body.league);
   const playerId=cleanId(body.playerId);
   if(!playerId)return new Response(JSON.stringify({error:"no playerId"}),{status:400,headers:CORS});
