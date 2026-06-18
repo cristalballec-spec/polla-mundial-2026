@@ -1104,28 +1104,27 @@ document.addEventListener("click",e=>{
 document.addEventListener("click",e=>{
   if(!e.target.closest("#evmSaveScore"))return;
   const m=eventMatch();if(!m)return;
-  const htH=($("#htH").value||"").replace(/[^0-9]/g,"").slice(0,2);
-  const htA=($("#htA").value||"").replace(/[^0-9]/g,"").slice(0,2);
-  const ftH=($("#ftH").value||"").replace(/[^0-9]/g,"").slice(0,2);
-  const ftA=($("#ftA").value||"").replace(/[^0-9]/g,"").slice(0,2);
-  // Guardar 1er tiempo
+  const gv=id=>{const el=$("#"+id);return el?(el.value||"").replace(/[^0-9]/g,"").slice(0,2):"";};
+  const htH=gv("htH"),htA=gv("htA"),ftH=gv("ftH"),ftA=gv("ftA");
   if(!store.extras)store.extras={};
   store.extras[m.id+"_ht"]={h:htH,a:htA};
-  // Calcular ganador del 1er tiempo si hay datos
   if(htH!==""&&htA!==""){
     const fh = +htH>+htA?m.home : +htA>+htH?m.away : "DRAW";
-    eventStats=Object.assign({},eventStats,{firstHalf:fh});
+    eventStats=Object.assign({},eventStats||{},{firstHalf:fh});
   }
-  // Guardar marcador final
   if(ftH!==""&&ftA!==""){
     store.results[m.id]={h:ftH,a:ftA};
     if(!store.finished)store.finished={};
   }
-  store.eventStats=eventStats; // persistir datos del evento
-  save();showSaveStatus("saving");pendingUserSave=true;schedulePush();
+  store.eventStats=eventStats;
+  try{save();}catch(err){}
+  try{showSaveStatus("saving");}catch(err){}
+  pendingUserSave=true;
+  try{schedulePush();}catch(err){}
   toast("✅ Resultado guardado");
-  $("#evmBody").innerHTML=buildEventModal();
-  try{refreshHeader();renderActive();}catch(e){}
+  closeEventModal();                       // cerrar la ventana
+  try{refreshHeader();}catch(err){}
+  try{renderActive();}catch(err){}
 });
 function refreshCard(id){
   const m=MATCHES.find(x=>x.id===id);const card=document.querySelector(`.match[data-id="${id}"]`);if(!card||!m)return;
