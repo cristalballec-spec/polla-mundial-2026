@@ -468,18 +468,48 @@ select.join-inp{cursor:pointer;appearance:none;-webkit-appearance:none;backgroun
 .mm-badge.pend{background:#EEF1F4;color:var(--pend)}
 .mm-badge.live{background:#007481;color:#fff;display:inline-flex;align-items:center;gap:5px}
 .mm-badge.live .lv-dot{width:7px;height:7px;background:#fff}
-/* Bonus del evento (predicciones extra) */
-.ev-extras{margin:10px 0 2px;background:linear-gradient(135deg,rgba(184,144,30,.06),rgba(184,144,30,.02));border:1.5px solid rgba(184,144,30,.35);border-radius:12px;padding:12px 13px}
-.ee-title{font-size:12.5px;font-weight:800;color:#9a7415;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
-.ee-title span{font-size:10.5px;background:var(--gold);color:#fff;border-radius:20px;padding:2px 9px}
-.ee-row{display:flex;align-items:center;gap:9px;padding:6px 0;flex-wrap:wrap}
-.ee-row label{font-size:12.5px;font-weight:700;color:var(--ink);flex:0 0 130px}
-.ee-opts{display:flex;gap:6px;flex:1}
-.ee-opt{background:var(--card);border:1.5px solid var(--line);border-radius:8px;padding:6px 12px;font-weight:800;font-size:12.5px;color:var(--ink-soft);cursor:pointer}
-.ee-opt.on{background:linear-gradient(135deg,#E0B43A,#B8901E);border-color:transparent;color:#fff;box-shadow:0 2px 8px rgba(184,144,30,.3)}
-.ee-num{width:52px;border:1.5px solid var(--line);border-radius:8px;padding:6px;text-align:center;font-weight:800;font-size:15px;color:var(--ink);background:var(--card)}
+/* Bonus / ventana del evento */
 .ee-ok{font-size:11px;font-weight:800;color:#0a8f63;background:#E6F8F1;border-radius:20px;padding:2px 8px}
 .ee-no{font-size:11px;font-weight:800;color:#b53024;background:#FBE7E5;border-radius:20px;padding:2px 8px}
+.eb-open{margin-top:12px;width:100%;background:linear-gradient(135deg,#E0B43A,#B8901E);color:#1A1815;font-weight:800;font-size:14px;border:none;border-radius:11px;padding:12px;cursor:pointer;box-shadow:0 3px 12px rgba(184,144,30,.35)}
+.eb-rules{background:var(--card);border:1.5px solid var(--line);border-radius:13px;padding:14px 15px;margin:0 2px 14px}
+.ebr-title{font-size:13px;font-weight:800;color:var(--ink);margin-bottom:10px}
+.ebr-item{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--line);font-size:13px;color:var(--ink)}
+.ebr-item:last-of-type{border-bottom:none}
+.ebr-item b{font-weight:700}
+.ebr-item span{font-weight:800;color:var(--field);background:rgba(0,116,129,.08);border-radius:20px;padding:2px 11px;font-size:12.5px}
+.ebr-note{margin-top:10px;font-size:11.5px;color:var(--ink-soft);line-height:1.5;font-weight:600}
+/* Modal del evento */
+.evm{position:fixed;inset:0;z-index:200;background:rgba(20,18,15,.6);backdrop-filter:blur(3px);display:flex;align-items:flex-end;justify-content:center;padding:0}
+.evm[hidden]{display:none}
+.evm-card{background:var(--paper);border-radius:20px 20px 0 0;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;padding:22px 18px 30px;position:relative;animation:evmUp .3s cubic-bezier(.2,.7,.3,1) both}
+@keyframes evmUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.evm-x{position:absolute;top:14px;right:14px;width:34px;height:34px;border-radius:50%;border:1.5px solid var(--line);background:var(--card);font-size:15px;font-weight:800;color:var(--ink-soft);cursor:pointer;z-index:2}
+.evm-head{text-align:center;margin-bottom:18px}
+.evm-badge{display:inline-block;background:linear-gradient(135deg,#E0B43A,#B8901E);color:#1A1815;font-weight:800;font-size:11px;letter-spacing:.05em;border-radius:20px;padding:4px 13px;margin-bottom:10px}
+.evm-head h2{font-size:18px;font-weight:800;color:var(--ink);margin:0 0 8px;line-height:1.3}
+.evm-sub{font-size:12.5px;color:var(--ink-soft);line-height:1.5}
+.evm-sub b{color:var(--field)}
+.evm-locked{margin-top:10px;background:#EEF1F4;color:var(--pend);font-weight:700;font-size:12px;border-radius:8px;padding:8px}
+.evm-preds{display:flex;flex-direction:column;gap:14px;margin-bottom:18px}
+.evm-row{background:var(--card);border:1.5px solid var(--line);border-radius:13px;padding:13px 14px}
+.evm-q{font-size:14px;font-weight:800;color:var(--ink);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+.evm-pts{font-size:11.5px;background:var(--gold);color:#fff;border-radius:20px;padding:2px 10px}
+.evm-opts{display:flex;gap:8px}
+.evm-opt{flex:1;background:var(--paper);border:1.5px solid var(--line);border-radius:10px;padding:11px 6px;font-weight:800;font-size:13.5px;color:var(--ink-soft);cursor:pointer;transition:.15s}
+.evm-opt.on{background:linear-gradient(135deg,#0092a3,#006675);border-color:transparent;color:#fff;box-shadow:0 3px 10px rgba(0,116,129,.28)}
+.evm-tag{margin-top:9px;font-size:11.5px;color:var(--ink-soft);display:flex;align-items:center;gap:8px}
+.evm-tag b{color:var(--ink)}
+.evm-score-box{background:linear-gradient(135deg,rgba(64,224,208,.07),var(--card));border:1.5px solid rgba(0,116,129,.3);border-radius:13px;padding:14px 15px}
+.evm-sb-title{font-size:13px;font-weight:800;color:var(--field);margin-bottom:12px}
+.evm-sb-title span{font-weight:600;color:var(--ink-soft);font-size:11px}
+.evm-sb-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
+.evm-sb-lab{font-size:13px;font-weight:700;color:var(--ink)}
+.evm-sb-inputs{display:flex;align-items:center;gap:8px}
+.evm-sb-inputs input{width:46px;height:44px;border:1.5px solid var(--line);border-radius:9px;text-align:center;font-weight:800;font-size:18px;color:var(--ink);background:var(--paper)}
+.evm-sb-inputs span{font-weight:800;color:var(--ink-soft)}
+.evm-save-score{width:100%;margin-top:6px;background:var(--field);color:#fff;border:none;border-radius:10px;padding:11px;font-weight:800;font-size:13.5px;cursor:pointer}
+.evm-sb-hint{font-size:11px;color:var(--ink-soft);margin-top:9px;line-height:1.45}
 .rank-row.crowned{border-color:var(--gold);background:linear-gradient(90deg,rgba(64,224,208,.12),var(--card));box-shadow:0 0 0 1px var(--gold)}
 /* CINEMATIC CELEBRACIONES */
 .cine{position:fixed;inset:0;z-index:300;pointer-events:none;overflow:hidden}
@@ -717,6 +747,12 @@ select.ob-inp{cursor:pointer;appearance:none;-webkit-appearance:none;background-
 </footer>
 
 <button class="fab-today" id="fabToday">⚽ Ir a HOY</button>
+<div id="eventModal" class="evm" hidden>
+  <div class="evm-card">
+    <button class="evm-x" id="evmClose">✕</button>
+    <div id="evmBody"></div>
+  </div>
+</div>
 <div id="toast"></div>
 
 <script>
@@ -797,7 +833,7 @@ const TEAM_LIST=ALL_CODES.slice().sort((a,b)=>NAME[a].localeCompare(NAME[b]));
 
 /* ===== ESTADO ===== */
 const LS_KEY="pollaMundial2026_v3";
-let store={preds:{},results:{},bracket:{},finished:{},extras:{}};
+let store={preds:{},results:{},bracket:{},finished:{},extras:{},eventStats:null};
 function load(){
   try{
     const s=JSON.parse(localStorage.getItem(LS_KEY)||"null");
@@ -809,6 +845,8 @@ function load(){
 }
 function save(){try{localStorage.setItem(LS_KEY,JSON.stringify(store));}catch(e){}}
 load();
+// Restaurar datos reales del evento si quedaron guardados
+if(store.eventStats)eventStats=store.eventStats;
 MATCHES.forEach(m=>{if(m.real&&!(m.id in store.results))store.results[m.id]={h:m.real.h,a:m.real.a};});
 // Purga resultados inválidos: solo borra si el partido no ha arrancado aún Y los valores son corruptos
 Object.keys(store.results).forEach(id=>{const m=MATCHES.find(x=>x.id===id);const r=store.results[id];const okNum=r&&/^\d{1,2}$/.test(String(r.h))&&/^\d{1,2}$/.test(String(r.a));if(!m||!okNum)delete store.results[id];// nunca borrar si el partido ya arrancó (en vivo o terminado)
@@ -997,50 +1035,9 @@ function grpCard(m,idx){idx=idx||0;
           ${(!started&&!hasPred)?'<div class="pz-hint">tócalo para editar</div>':''}
         </div>
       </div>${teamHTML(m.away,true)}</div>
-    ${eventExtrasHTML(m,started)}
     <div class="m-foot">${cheer}${pts}</div></div>`;
 }
-function eventExtrasHTML(m,started){
-  if(!EVENT_CFG.active||!EVENT_CFG.extras||m.id!==EVENT_CFG.matchId)return "";
-  const ex=store.extras&&store.extras[m.id]||{};
-  const hN=NAME[m.home],aN=NAME[m.away];
-  const fg=ex.firstGoal||"",yc=ex.yellow!=null?ex.yellow:"",rc=ex.red!=null?ex.red:"",fc=ex.firstCorner||"";
-  const dis=started?"disabled":"";
-  // Resultado real (si ya hay)
-  const s=eventStats||{};
-  const chk=(pred,real)=>real!=null&&real!==""&&pred!==""&&String(pred)===String(real);
-  const tag=(ok,has)=>has?(ok?'<span class="ee-ok">✓ +1</span>':'<span class="ee-no">✗</span>'):"";
-  return `<div class="ev-extras">
-    <div class="ee-title">🏆 Bonus del evento <span>+1 pt c/u</span></div>
-    <div class="ee-row">
-      <label>⚽ Primer gol</label>
-      <div class="ee-opts">
-        <button class="ee-opt ${fg===m.home?'on':''}" data-ee="firstGoal" data-val="${m.home}" data-id="${m.id}" ${dis}>${m.home}</button>
-        <button class="ee-opt ${fg===m.away?'on':''}" data-ee="firstGoal" data-val="${m.away}" data-id="${m.id}" ${dis}>${m.away}</button>
-        <button class="ee-opt ${fg==='NONE'?'on':''}" data-ee="firstGoal" data-val="NONE" data-id="${m.id}" ${dis}>Ninguno</button>
-      </div>
-      ${tag(chk(fg,s.firstGoal),s.firstGoal!=null)}
-    </div>
-    <div class="ee-row">
-      <label>🚩 Primer córner</label>
-      <div class="ee-opts">
-        <button class="ee-opt ${fc===m.home?'on':''}" data-ee="firstCorner" data-val="${m.home}" data-id="${m.id}" ${dis}>${m.home}</button>
-        <button class="ee-opt ${fc===m.away?'on':''}" data-ee="firstCorner" data-val="${m.away}" data-id="${m.id}" ${dis}>${m.away}</button>
-      </div>
-      ${tag(chk(fc,s.firstCorner),s.firstCorner!=null)}
-    </div>
-    <div class="ee-row">
-      <label>🟨 Amarillas (total)</label>
-      <input type="tel" maxlength="2" class="ee-num" value="${yc}" data-ee="yellow" data-id="${m.id}" placeholder="?" ${dis}>
-      ${tag(chk(yc,s.yellow),s.yellow!=null)}
-    </div>
-    <div class="ee-row">
-      <label>🟥 Rojas (total)</label>
-      <input type="tel" maxlength="2" class="ee-num" value="${rc}" data-ee="red" data-id="${m.id}" placeholder="?" ${dis}>
-      ${tag(chk(rc,s.red),s.red!=null)}
-    </div>
-  </div>`;
-}
+// El bloque de predicciones del evento ahora vive en su propia ventana (modal), no en la tarjeta.
 function koCard(it,idx){idx=idx||0;
   const k=it.k;const b=store.bracket[k.id]||{};
   const played=hasScore({h:b.hSc,a:b.aSc});
@@ -1082,29 +1079,53 @@ document.addEventListener("input",e=>{const el=e.target;
     if(!joined())setTimeout(()=>{if(pendingUserSave){pendingUserSave=false;showSaveStatus("local");}},350);
     refreshCard(id);refreshHeader();refreshEcuCounter();schedulePush();updateJoinNudge();
   }
-  // EVENTO: inputs numéricos de tarjetas (amarillas/rojas)
-  if(el.dataset&&el.dataset.ee&&el.dataset.id&&(el.dataset.ee==="yellow"||el.dataset.ee==="red")){
-    const id=el.dataset.id,field=el.dataset.ee;
-    const mm=MATCHES.find(x=>x.id===id);if(mm&&matchStarted(mm)){el.value=(store.extras[id]&&store.extras[id][field]!=null)?store.extras[id][field]:"";return;}
-    const v=el.value.replace(/[^0-9]/g,"").slice(0,2);el.value=v;
-    if(!store.extras[id])store.extras[id]={};
-    store.extras[id][field]=v===""?null:+v;save();
-    showSaveStatus("saving");pendingUserSave=true;schedulePush();
-    if(!joined())setTimeout(()=>{if(pendingUserSave){pendingUserSave=false;showSaveStatus("local");}},350);
-  }
 });
-// EVENTO: botones de opción (primer gol / primer córner)
+/* ===== HANDLERS DE LA VENTANA DEL EVENTO ===== */
+// Botones de predicción (primer gol / primer tiempo / primer córner)
 document.addEventListener("click",e=>{
-  const b=e.target.closest(".ee-opt");if(!b)return;
-  const id=b.dataset.id,field=b.dataset.ee,val=b.dataset.val;
-  const mm=MATCHES.find(x=>x.id===id);if(mm&&matchStarted(mm))return; // cerrado
-  if(!store.extras[id])store.extras[id]={};
-  // toggle: si ya estaba seleccionado, deseleccionar
-  store.extras[id][field]=(store.extras[id][field]===val)?null:val;
+  const b=e.target.closest(".evm-opt");if(!b)return;
+  const m=eventMatch();if(!m)return;
+  if(matchStarted(m))return; // cerrado
+  const key=b.dataset.evk,val=b.dataset.val;
+  if(!store.extras[m.id])store.extras[m.id]={};
+  store.extras[m.id][key]=(store.extras[m.id][key]===val)?null:val; // toggle
   save();showSaveStatus("saving");pendingUserSave=true;schedulePush();
   if(!joined())setTimeout(()=>{if(pendingUserSave){pendingUserSave=false;showSaveStatus("local");}},350);
-  // re-render solo los botones de esa fila
-  b.parentElement.querySelectorAll(".ee-opt").forEach(x=>x.classList.toggle("on",store.extras[id][field]===x.dataset.val));
+  // marcar el seleccionado en su fila
+  b.parentElement.querySelectorAll(".evm-opt").forEach(x=>x.classList.toggle("on",store.extras[m.id][key]===x.dataset.val));
+});
+// Abrir / cerrar modal
+document.addEventListener("click",e=>{
+  if(e.target.closest("#evmClose")){closeEventModal();return;}
+  if(e.target.id==="eventModal"){closeEventModal();return;} // click en el fondo
+  if(e.target.closest("[data-open-event]")){openEventModal();return;}
+});
+// Guardar resultado del partido (1er tiempo + final) desde el modal
+document.addEventListener("click",e=>{
+  if(!e.target.closest("#evmSaveScore"))return;
+  const m=eventMatch();if(!m)return;
+  const htH=($("#htH").value||"").replace(/[^0-9]/g,"").slice(0,2);
+  const htA=($("#htA").value||"").replace(/[^0-9]/g,"").slice(0,2);
+  const ftH=($("#ftH").value||"").replace(/[^0-9]/g,"").slice(0,2);
+  const ftA=($("#ftA").value||"").replace(/[^0-9]/g,"").slice(0,2);
+  // Guardar 1er tiempo
+  if(!store.extras)store.extras={};
+  store.extras[m.id+"_ht"]={h:htH,a:htA};
+  // Calcular ganador del 1er tiempo si hay datos
+  if(htH!==""&&htA!==""){
+    const fh = +htH>+htA?m.home : +htA>+htH?m.away : "DRAW";
+    eventStats=Object.assign({},eventStats,{firstHalf:fh});
+  }
+  // Guardar marcador final
+  if(ftH!==""&&ftA!==""){
+    store.results[m.id]={h:ftH,a:ftA};
+    if(!store.finished)store.finished={};
+  }
+  store.eventStats=eventStats; // persistir datos del evento
+  save();showSaveStatus("saving");pendingUserSave=true;schedulePush();
+  toast("✅ Resultado guardado");
+  $("#evmBody").innerHTML=buildEventModal();
+  try{refreshHeader();renderActive();}catch(e){}
 });
 function refreshCard(id){
   const m=MATCHES.find(x=>x.id===id);const card=document.querySelector(`.match[data-id="${id}"]`);if(!card||!m)return;
@@ -1407,21 +1428,21 @@ async function fetchEventCorner(){
   const res=await fetch("https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/summary?event="+eid,{cache:"no-store"});
   const d=await res.json();
   const comm=d.commentary||[];
-  // Saques de esquina: el texto empieza con "Corner, <País>."
   const corners=comm.filter(c=>(c.text||"").trim().toLowerCase().startsWith("corner"))
     .sort((a,b)=>((a.time&&a.time.value)||0)-((b.time&&b.time.value)||0));
   if(corners.length){
     const txt=corners[0].text||"";
-    // "Corner, Mexico. Conceded by..." → detectar país
-    const homeName=(NAME[em.home]||"").toLowerCase();
-    const awayName=(NAME[em.away]||"").toLowerCase();
     const low=txt.toLowerCase();
     let fc=null;
-    // Mapear nombre largo de ESPN → código. Probamos nombres conocidos.
     const ESPN_NAME={MEX:["mexico","méxico"],KOR:["korea republic","south korea","korea"]};
-    (ESPN_NAME[em.home]||[homeName]).forEach(n=>{if(low.includes(n))fc=em.home;});
-    if(!fc)(ESPN_NAME[em.away]||[awayName]).forEach(n=>{if(low.includes(n))fc=em.away;});
-    if(fc){eventStats=Object.assign({},eventStats,{firstCorner:fc});}
+    (ESPN_NAME[em.home]||[(NAME[em.home]||"").toLowerCase()]).forEach(n=>{if(low.includes(n))fc=em.home;});
+    if(!fc)(ESPN_NAME[em.away]||[(NAME[em.away]||"").toLowerCase()]).forEach(n=>{if(low.includes(n))fc=em.away;});
+    if(fc)eventStats=Object.assign({},eventStats,{firstCorner:fc});
+  }else{
+    // Si el partido terminó y no hubo ningún córner → "Ninguno"
+    const st=(d.header&&d.header.competitions&&d.header.competitions[0]&&d.header.competitions[0].status)||{};
+    const ended=st.type&&(st.type.state==="post"||st.type.completed);
+    if(ended)eventStats=Object.assign({},eventStats,{firstCorner:"NONE"});
   }
 }
 function espnUrl(){return "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard?dates=20260611-20260720";}
@@ -1460,24 +1481,34 @@ async function syncResults(silent){
       // Marcar como terminado cuando ESPN confirma Full Time
       if(finished){if(!store.finished)store.finished={};store.finished[target.id]=true;}
       updated++;
-      // EVENTO: extraer datos extra (primer gol, tarjetas) del partido del evento
+      // EVENTO: extraer datos reales del partido del evento (primer gol + ganador 1er tiempo)
       if(EVENT_CFG.active&&EVENT_CFG.extras&&target.id===EVENT_CFG.matchId){
         EVENT_CFG.espnEventId=e.id;
         const idmap={};cs.forEach(c=>{idmap[(c.team&&c.team.id)]=((c.team&&c.team.abbreviation)||"").toUpperCase();});
         const details=comp.details||[];
         const goals=details.filter(d=>d.scoringPlay).sort((a,b)=>((a.clock&&a.clock.value)||0)-((b.clock&&b.clock.value)||0));
-        const yellow=details.filter(d=>d.yellowCard).length;
-        const red=details.filter(d=>d.redCard).length;
         let firstGoal="NONE";
         if(goals.length){const tid=goals[0].team&&goals[0].team.id;firstGoal=idmap[tid]||"NONE";}
-        eventStats=Object.assign({},eventStats,{firstGoal,yellow,red});
+        // Ganador del primer tiempo: contar goles anotados en los primeros 45' (clock<=2700s) por equipo
+        let h1h=0,a1h=0;
+        goals.forEach(g=>{const cv=(g.clock&&g.clock.value)||0;if(cv<=2700+0){const ab=idmap[g.team&&g.team.id];if(ab===target.home)h1h++;else if(ab===target.away)a1h++;}});
+        // Solo fijamos firstHalf si el partido pasó el medio tiempo (periodo 2 o más, o terminado)
+        const period=(e.status&&e.status.period)||0;
+        const stState=(e.status&&e.status.type&&e.status.type.state)||"";
+        let firstHalf=null;
+        if(period>=2||stState==="post"){
+          firstHalf = h1h>a1h?target.home : a1h>h1h?target.away : "DRAW";
+        }
+        const patch={firstGoal};
+        if(firstHalf!=null)patch.firstHalf=firstHalf;
+        eventStats=Object.assign({},eventStats,patch);
       }
     });
     // EVENTO: traer primer córner del summary (segunda llamada, solo si el partido empezó)
     if(EVENT_CFG.active&&EVENT_CFG.extras&&EVENT_CFG.espnEventId){
       try{await fetchEventCorner();}catch(e){}
     }
-    store.lastSync=new Date().toISOString();save();schedulePush();
+    store.lastSync=new Date().toISOString();if(eventStats)store.eventStats=eventStats;save();schedulePush();
     try{checkCelebrations();}catch(e){}
     refreshHeader();refreshEcuCounter();
     const v=document.querySelector(".tab.active").dataset.view;
@@ -1505,16 +1536,80 @@ const DEFAULT_LEAGUE="STATUS";
 const EVENT_CFG={
   active:true,
   matchId:"G3",              // MEX vs KOR (jueves 18, 20:00 EC)
-  league:"STATUS",           // el evento usa la liga general STATUS
+  league:"STATUS",
   title:"🏆 EVENTO F1 · Premio en vivo",
-  subtitle:"Quien acierte MÉXICO vs COREA DEL SUR gana el premio",
+  subtitle:"MÉXICO vs COREA DEL SUR",
   date:"2026-06-18",
-  extras:true,               // predicciones extra activas (solo este partido)
-  espnEventId:null           // se llena al sincronizar, para el summary de córners
+  extras:true,
+  espnEventId:null,
+  // Predicciones del evento y sus puntos
+  preds:[
+    {key:"firstGoal",  label:"⚽ Primer gol",          pts:2, opts:"teamsNone"}, // MEX/KOR/Ninguno
+    {key:"firstHalf",  label:"⏱️ Gana el primer tiempo", pts:2, opts:"teamsDraw"}, // MEX/KOR/Empate
+    {key:"firstCorner",label:"🚩 Primer tiro de esquina",pts:1, opts:"teamsNone"}  // MEX/KOR/Ninguno
+  ]
 };
 function eventMatch(){return MATCHES.find(x=>x.id===EVENT_CFG.matchId);}
-// Datos reales del partido del evento (gol, tarjetas, córner) extraídos de ESPN
-let eventStats=null; // {firstGoal:'MEX'|'KOR'|'NONE', yellow:n, red:n, firstCorner:'MEX'|'KOR'|null}
+/* ===== VENTANA DEL EVENTO ===== */
+function eventOptions(kind,m){
+  if(kind==="teamsNone")return [[m.home,m.home],[m.away,m.away],["NONE","Ninguno"]];
+  if(kind==="teamsDraw")return [[m.home,m.home],["DRAW","Empate"],[m.away,m.away]];
+  return [];
+}
+function buildEventModal(){
+  const m=eventMatch();if(!m)return "";
+  const ex=(store.extras&&store.extras[m.id])||{};
+  const started=matchStarted(m);
+  const r=store.results[m.id]||{h:"",a:""};
+  const s=eventStats||{};
+  // Predicciones
+  let predsHTML=EVENT_CFG.preds.map(pd=>{
+    const cur=ex[pd.key]||"";
+    const opts=eventOptions(pd.opts,m).map(([val,lab])=>
+      `<button class="evm-opt ${cur===val?'on':''}" data-evk="${pd.key}" data-val="${val}" ${started?'disabled':''}>${lab}</button>`
+    ).join("");
+    const real=s[pd.key];
+    const tag=(real!=null&&real!=="")?(cur!==""&&String(cur)===String(real)?`<span class="ee-ok">✓ +${pd.pts}</span>`:`<span class="ee-no">✗</span>`):"";
+    return `<div class="evm-row">
+      <div class="evm-q">${pd.label} <span class="evm-pts">+${pd.pts}</span></div>
+      <div class="evm-opts">${opts}</div>
+      ${tag?`<div class="evm-tag">${tag}${real!=null&&real!==""?` · real: <b>${real==="NONE"?"Ninguno":real==="DRAW"?"Empate":real}</b>`:""}</div>`:""}
+    </div>`;
+  }).join("");
+  // Marcador del partido (1er tiempo + final) — cualquiera puede llenar
+  const ht=store.extras&&store.extras[m.id+"_ht"]||{h:"",a:""};
+  const scoreHTML=`<div class="evm-score-box">
+    <div class="evm-sb-title">📋 Resultado del partido <span>(cualquiera puede cargarlo)</span></div>
+    <div class="evm-sb-row">
+      <span class="evm-sb-lab">⏱️ Primer tiempo</span>
+      <div class="evm-sb-inputs"><input type="tel" maxlength="2" id="htH" value="${ht.h}" placeholder="?"><span>:</span><input type="tel" maxlength="2" id="htA" value="${ht.a}" placeholder="?"></div>
+    </div>
+    <div class="evm-sb-row">
+      <span class="evm-sb-lab">🏁 Final</span>
+      <div class="evm-sb-inputs"><input type="tel" maxlength="2" id="ftH" value="${r.h}" placeholder="?"><span>:</span><input type="tel" maxlength="2" id="ftA" value="${r.a}" placeholder="?"></div>
+    </div>
+    <button class="evm-save-score" id="evmSaveScore">Guardar resultado</button>
+    <p class="evm-sb-hint">El ganador del 1er tiempo y el resto se calculan con esto + lo que trae ESPN automáticamente.</p>
+  </div>`;
+  const totalPts=EVENT_CFG.preds.reduce((a,p)=>a+p.pts,0);
+  return `<div class="evm-head">
+      <div class="evm-badge">🏆 BONUS DEL EVENTO</div>
+      <h2>${FLAG[m.home]} ${NAME[m.home]} vs ${NAME[m.away]} ${FLAG[m.away]}</h2>
+      <p class="evm-sub">Estas predicciones suman puntos extra solo para el premio de esta noche. Total en juego: <b>+${totalPts} pts</b>.</p>
+      ${started?'<div class="evm-locked">🔒 Las predicciones ya se cerraron (el partido empezó)</div>':''}
+    </div>
+    <div class="evm-preds">${predsHTML}</div>
+    ${scoreHTML}`;
+}
+function openEventModal(){
+  const ov=$("#eventModal");if(!ov)return;
+  $("#evmBody").innerHTML=buildEventModal();
+  ov.hidden=false;document.body.style.overflow="hidden";
+}
+function closeEventModal(){const ov=$("#eventModal");if(ov){ov.hidden=true;document.body.style.overflow="";}}
+// Datos reales del partido del evento extraídos de ESPN o cargados manual
+// {firstGoal:'MEX'|'KOR'|'NONE', firstHalf:'MEX'|'KOR'|'DRAW', firstCorner:'MEX'|'KOR'|'NONE'}
+let eventStats=null;
 const LS_PLAYER="pollaMundial2026_player";
 function genId(){return "p"+Date.now().toString(36)+Math.random().toString(36).slice(2,8);}
 function loadPlayer(){try{const p=JSON.parse(localStorage.getItem(LS_PLAYER)||"null");if(p&&p.id)return{id:p.id,name:p.name||"",league:(p.league||DEFAULT_LEAGUE)};}catch(e){}return{id:genId(),name:"",league:DEFAULT_LEAGUE};}
@@ -1601,7 +1696,7 @@ function schedulePush(){if(!joined())return;clearTimeout(pushTimer);pushTimer=se
 async function pushState(){
   if(!joined())return false;
   try{
-    const r=await fetch(API+"/submit",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({league:player.league,playerId:player.id,name:player.name,preds:store.preds,bracket:store.bracket,results:store.results,extras:store.extras})});
+    const r=await fetch(API+"/submit",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({league:player.league,playerId:player.id,name:player.name,preds:store.preds,bracket:store.bracket,results:store.results,extras:store.extras,eventStats:store.eventStats})});
     if(pendingUserSave){pendingUserSave=false;showSaveStatus(r.ok?"synced":"localnet");}
     return r.ok;
   }catch(e){if(pendingUserSave){pendingUserSave=false;showSaveStatus("localnet");}return false;}
@@ -1609,7 +1704,10 @@ async function pushState(){
 async function pullRanking(){
   const r=await fetch(API+"/state?league="+encodeURIComponent(player.league||DEFAULT_LEAGUE),{cache:"no-store"});
   if(!r.ok)throw new Error("net");
-  return await r.json();
+  const data=await r.json();
+  // Fusionar datos reales del evento del servidor con los locales (servidor manda si existe)
+  if(data.eventStats){eventStats=Object.assign({},eventStats,data.eventStats);store.eventStats=eventStats;save();}
+  return data;
 }
 function shareLeague(){
   const url=location.origin+location.pathname;
@@ -1750,15 +1848,15 @@ function matchBoard(matchId){
       if(+r.h===+p.h&&+r.a===+p.a){pts=5;exact=1;}
       else if(_out(+r.h,+r.a)===_out(+p.h,+p.a))pts=3;
     }
-    // Bonus del evento: +1 por cada acierto extra (solo si ya hay dato real)
+    // Bonus del evento: puntos según config (primer gol +2, primer tiempo +2, córner +1)
     let bonus=0;const ex=(e.extras||{})[matchId]||{};
     if(useExtras){
-      if(s.firstGoal!=null&&ex.firstGoal!=null&&ex.firstGoal!==""&&String(ex.firstGoal)===String(s.firstGoal))bonus++;
-      if(s.firstCorner!=null&&ex.firstCorner!=null&&ex.firstCorner!==""&&String(ex.firstCorner)===String(s.firstCorner))bonus++;
-      if(s.yellow!=null&&ex.yellow!=null&&ex.yellow!==""&&+ex.yellow===+s.yellow)bonus++;
-      if(s.red!=null&&ex.red!=null&&ex.red!==""&&+ex.red===+s.red)bonus++;
+      EVENT_CFG.preds.forEach(pd=>{
+        const real=s[pd.key],pred=ex[pd.key];
+        if(real!=null&&real!==""&&pred!=null&&pred!==""&&String(pred)===String(real))bonus+=pd.pts;
+      });
     }
-    const hasExtra=useExtras&&(ex.firstGoal!=null||ex.firstCorner!=null||ex.yellow!=null||ex.red!=null);
+    const hasExtra=useExtras&&EVENT_CFG.preds.some(pd=>ex[pd.key]!=null&&ex[pd.key]!=="");
     return{playerId:e.playerId,name:e.name,pts:pts+bonus,base:pts,bonus,exact,predCount:hasP?1:0,pred:hasP?(p.h+":"+p.a):null,hasExtra};
   }).filter(x=>x.predCount>0||x.hasExtra||x.playerId===player.id)
     .sort((a,b)=>b.pts-a.pts||b.exact-a.exact||(a.name||"").localeCompare(b.name||""));
@@ -1834,32 +1932,37 @@ function renderRankView(){
     const em=eventMatch();const r=results[EVENT_CFG.matchId];
     const live=em&&matchLive(em);const fin=hasScore(r);
     const scoreTxt=fin?`${r.h} - ${r.a}`:(live?"EN JUEGO":"Por jugar");
-    // Datos reales del evento (gol, tarjetas, córner)
     const s=eventStats||{};
+    // Línea de datos reales (lo que ya se sabe)
+    const realLabel=v=>v==="NONE"?"Ninguno":v==="DRAW"?"Empate":v;
     let statsLine="";
-    if(s.firstGoal!=null||s.yellow!=null||s.firstCorner!=null){
-      const parts=[];
-      if(s.firstGoal!=null)parts.push(`⚽ 1er gol: <b>${s.firstGoal==="NONE"?"Ninguno":s.firstGoal}</b>`);
-      if(s.firstCorner!=null)parts.push(`🚩 1er córner: <b>${s.firstCorner}</b>`);
-      if(s.yellow!=null)parts.push(`🟨 <b>${s.yellow}</b>`);
-      if(s.red!=null)parts.push(`🟥 <b>${s.red}</b>`);
-      statsLine=`<div class="eb-stats">${parts.join(" · ")}</div>`;
-    }
-    // Contar ganadores (los del puntaje máximo > 0)
+    const parts=[];
+    EVENT_CFG.preds.forEach(pd=>{if(s[pd.key]!=null&&s[pd.key]!=="")parts.push(`${pd.label.split(" ")[0]} <b>${realLabel(s[pd.key])}</b>`);});
+    if(parts.length)statsLine=`<div class="eb-stats">${parts.join(" · ")}</div>`;
+    // Botón para abrir la ventana del evento
+    const openBtn=`<button class="eb-open" data-open-event>${matchStarted(em)?"Ver / cargar resultado":"✏️ Hacer mis predicciones del evento"}</button>`;
+    // Ganadores
     let winnersBadge="";
     if(fin&&board.length&&board[0].pts>0){
-      const topPts=board[0].pts;
-      const winners=board.filter(p=>p.pts===topPts);
-      winnersBadge=`<div class="eb-winners">🎉 ${winners.length} ganador${winners.length>1?"es":""} · ${topPts} pt${topPts>1?"s":""} (marcador + bonus)</div>`;
+      const topPts=board[0].pts;const winners=board.filter(p=>p.pts===topPts);
+      winnersBadge=`<div class="eb-winners">🎉 ${winners.length} ganador${winners.length>1?"es":""} · ${topPts} pts (marcador + bonus)</div>`;
     }
     eventBanner=`<div class="event-banner ${live?'live':''} ${fin?'done':''}">
       <div class="eb-top">${EVENT_CFG.title}</div>
       <div class="eb-match">${FLAG[em.home]} ${NAME[em.home]} <span class="eb-sc">${scoreTxt}</span> ${NAME[em.away]} ${FLAG[em.away]}</div>
       <div class="eb-sub">${EVENT_CFG.subtitle}</div>
       ${statsLine}
+      ${openBtn}
       ${winnersBadge}
+    </div>
+    <div class="eb-rules">
+      <div class="ebr-title">Cómo se gana el premio</div>
+      <div class="ebr-item"><b>Marcador exacto</b><span>+5</span></div>
+      <div class="ebr-item"><b>Resultado (gana/empata)</b><span>+3</span></div>
+      ${EVENT_CFG.preds.map(pd=>`<div class="ebr-item"><b>${pd.label}</b><span>+${pd.pts}</span></div>`).join("")}
+      <div class="ebr-note">Todo suma. El que más puntos junte gana. Si hay empate, ganan todos los que empaten.</div>
     </div>`;
-    foot=`🏆 Marcador (5/3 pts) + bonus (+1 c/u: gol, córner, 🟨, 🟥). ${fin?"Los 👑 ganan el premio.":"Se decide al terminar."}`;
+    foot=`🏆 Predicciones en la ventana del evento (botón arriba). ${fin?"Los 👑 ganan el premio.":"Se cierran cuando empieza el partido."}`;
   }else{
     crown=true;board=jornadaBoard(+rankView);
     foot=`👑 Corona al mejor de la jornada ${rankView}. Solo cuentan los partidos de esa fecha.`;

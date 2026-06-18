@@ -49,5 +49,7 @@ export default async (req)=>{
     Object.keys(preds).forEach(mid=>{if(results[mid])fp[mid]=preds[mid];});
     return{playerId:pl.playerId||"",name:pl.name||"Anónimo",preds:fp,extras:pl.extras||{}};
   });
-  return new Response(JSON.stringify({code,results,leaderboard:board,entries,players:board.length}),{headers:CORS});
+  let eventStats=null;
+  try{eventStats=await store.get(`liga:${code}:eventStats`,{type:"json",consistency:"strong"})||null;}catch(e){eventStats=null;}
+  return new Response(JSON.stringify({code,results,leaderboard:board,entries,players:board.length,eventStats}),{headers:CORS});
 };

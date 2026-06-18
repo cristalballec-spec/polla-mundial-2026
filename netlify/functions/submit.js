@@ -56,6 +56,16 @@ export default async (req)=>{
   // 1) Guardar el blob propio del jugador (sin condición de carrera)
   await store.setJSON(`liga:${code}:p:${playerId}`,{playerId,name,preds,bracket,extras,updatedAt:Date.now()});
 
+  // 1c) Datos reales del evento (gol/1er tiempo/córner) — clave compartida, cualquiera puede cargarlos
+  if(body.eventStats&&typeof body.eventStats==="object"){
+    try{
+      let cur=await store.get(`liga:${code}:eventStats`,{type:"json",consistency:"strong"});
+      cur=cur||{};
+      const merged=Object.assign({},cur,body.eventStats);
+      await store.setJSON(`liga:${code}:eventStats`,merged);
+    }catch(e){}
+  }
+
   // 1b) Índice de jugadores de la liga (para listado inmediato, sin depender del list eventual)
   try{
     let idx=await store.get(`liga:${code}:idx`,{type:"json",consistency:"strong"});
