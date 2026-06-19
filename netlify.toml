@@ -18,3 +18,7 @@
   from = "/api/scores"
   to = "/.netlify/functions/scores"
   status = 200
+[[headers]]
+  for = "/version.txt"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
