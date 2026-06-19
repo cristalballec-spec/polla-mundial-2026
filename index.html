@@ -1925,6 +1925,14 @@ function renderMyMatchesByDate(results){
   return header+`<div class="mm-list">`+html+`</div>`;
 }
 function renderRankView(){
+  try{return renderRankViewInner();}
+  catch(err){
+    const body=$("#rankBody");
+    if(body)body.innerHTML=`<div class="rank-chips"><button class="rchip on" data-rv="general">General</button><button class="rchip" data-rv="event">🏆 Evento</button></div><div class="empty"><div class="big">⚠️</div>Hubo un problema al mostrar la tabla.<br><small>Toca Actualizar o recarga la página.</small></div>`;
+    try{wireChips();}catch(e){}
+  }
+}
+function renderRankViewInner(){
   const body=$("#rankBody");if(!body)return;
   // Si no hay datos del servidor, usar un objeto vacío para que "Mis partidos" y "Evento" funcionen con datos locales
   const d=lastRankData||{leaderboard:[],results:{},entries:[]};
@@ -1944,9 +1952,15 @@ function renderRankView(){
     body.innerHTML=chips+renderMyMatchesByDate(results);
     wireChips();return;
   }else if(rankView==="event"){
+    const em=eventMatch();
+    if(!em){
+      // Si por alguna razón no existe el partido del evento, no romper el ranking
+      body.innerHTML=chips+`<div class="empty"><div class="big">🏆</div>El evento no está disponible.</div>`;
+      wireChips();return;
+    }
     crown=true;board=matchBoard(EVENT_CFG.matchId);
-    const em=eventMatch();const r=results[EVENT_CFG.matchId];
-    const live=em&&matchLive(em);const fin=hasScore(r);
+    const r=results[EVENT_CFG.matchId];
+    const live=matchLive(em);const fin=hasScore(r);
     const scoreTxt=fin?`${r.h} - ${r.a}`:(live?"EN JUEGO":"Por jugar");
     const s=eventStats||{};
     // Línea de datos reales (lo que ya se sabe)
