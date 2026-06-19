@@ -836,7 +836,7 @@ const norm=s=>(s||"").toString().toLowerCase().normalize("NFD").replace(/[\u0300
 const TEAM_LIST=ALL_CODES.slice().sort((a,b)=>NAME[a].localeCompare(NAME[b]));
 
 /* ===== ESTADO ===== */
-const APP_VERSION="2026.06.18-15"; // se compara con /version.txt para auto-recargar
+const APP_VERSION="2026.06.18-16"; // se compara con /version.txt para auto-recargar
 const LS_KEY="pollaMundial2026_v3";
 let store={preds:{},results:{},bracket:{},finished:{},extras:{},eventStats:null};
 function load(){
@@ -1430,7 +1430,7 @@ const EN2CODE={"Mexico":"MEX","South Africa":"RSA","South Korea":"KOR","Czech Re
 async function fetchEventCorner(){
   const eid=EVENT_CFG.espnEventId;if(!eid)return;
   const em=eventMatch();if(!em)return;
-  const res=await fetch("https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/summary?event="+eid,{cache:"no-store"});
+  const res=await fetch("/api/scores?event="+encodeURIComponent(eid),{cache:"no-store"});
   const d=await res.json();
   const comm=d.commentary||[];
   const corners=comm.filter(c=>(c.text||"").trim().toLowerCase().startsWith("corner"))
@@ -1450,7 +1450,7 @@ async function fetchEventCorner(){
     if(ended)eventStats=Object.assign({},eventStats,{firstCorner:"NONE"});
   }
 }
-function espnUrl(){return "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard?dates=20260611-20260720";}
+function espnUrl(){return "/api/scores";} // proxy Netlify (mismo dominio) → evita bloqueo de privacidad/CORS
 function setSyncInfo(html,cls){const el=$("#syncInfo");if(!el)return;el.className="sync-info"+(cls?" "+cls:"");el.innerHTML=html;}
 function relTime(iso){if(!iso)return"";const s=Math.round((Date.now()-new Date(iso))/1000);if(s<60)return"hace instantes";if(s<3600)return"hace "+Math.floor(s/60)+" min";if(s<86400)return"hace "+Math.floor(s/3600)+" h";return"hace "+Math.floor(s/86400)+" días";}
 function showSyncIdle(){
