@@ -836,7 +836,7 @@ const norm=s=>(s||"").toString().toLowerCase().normalize("NFD").replace(/[\u0300
 const TEAM_LIST=ALL_CODES.slice().sort((a,b)=>NAME[a].localeCompare(NAME[b]));
 
 /* ===== ESTADO ===== */
-const APP_VERSION="2026.06.18-14"; // se compara con /version.txt para auto-recargar
+const APP_VERSION="2026.06.18-15"; // se compara con /version.txt para auto-recargar
 const LS_KEY="pollaMundial2026_v3";
 let store={preds:{},results:{},bracket:{},finished:{},extras:{},eventStats:null};
 function load(){
@@ -1371,7 +1371,7 @@ function renderResultFeed(){
 }
 
 /* ===== NAV ===== */
-function renderActive(){const v=document.querySelector(".tab.active").dataset.view;
+function renderActive(){const at=document.querySelector(".tab.active");const v=at?at.dataset.view:"lista";
   if(v!=="ranking")stopRankPoll();
   if(v==="lista")renderList();else if(v==="calendario")renderCalendar();else if(v==="grupos")renderGroups();else if(v==="bracket")renderBracket();else if(v==="resumen")renderResultFeed();else if(v==="ranking")renderRanking();
   refreshHeader();}
@@ -2128,7 +2128,9 @@ function goToEventIfToday(){
     try{updateFab();positionInd();}catch(e){}
   }catch(e){}
 }
-setTimeout(goToEventIfToday,300);
+// Redirect automático al evento DESACTIVADO temporalmente (causaba estados inconsistentes al cargar).
+// La gente entra al evento tocando la pestaña Ranking → chip Evento.
+// setTimeout(goToEventIfToday,300);
 /* ===== AUTO-ACTUALIZACIÓN DE VERSIÓN ===== */
 async function checkVersion(){
   try{
